@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas-bg: #EFEEEB;
+    --card-bg: #FFFFFF;
+    --charcoal: #18181B;
+    --azure: #1A94FF;
+  }
+
+  html, body {
+    background-color: var(--canvas-bg);
+    color: var(--charcoal);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #EFEEEB !important;
+  font-family: inherit;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 6px !important;
+  margin: 6px !important;
+  padding: 2px 6px !important;
+}
+
+.leaflet-bar {
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(24, 24, 27, 0.08) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.leaflet-bar a {
+  background-color: #FFFFFF !important;
+  color: #18181B !important;
+  border: none !important;
+  border-bottom: 1px solid #ECEAE5 !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+}
+
+.leaflet-bar a:last-child {
+  border-bottom: none !important;
+}
+
+.signature-pin-container {
+  position: relative;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.signature-pin-container:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  z-index: 9999 !important;
+}
+
+.signature-pin-thumbnail {
+  width: 60px;
+  height: 48px;
+  border-radius: 14px;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+  background-color: #EFEEEB;
+}
+
+.signature-pin-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.signature-pin-avatar {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  background-color: #FFFFFF;
+  z-index: 10;
+}
+
+.signature-pin-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.signature-pin-stem {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #FFFFFF;
+  border-radius: 2px;
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.3);
+  border-radius: 9999px;
+}
