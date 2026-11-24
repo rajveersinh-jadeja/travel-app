@@ -4,12 +4,25 @@ import { LiveWorldMap } from './components/Map/LiveWorldMap'
 import { PinDetailSheet } from './components/Map/PinDetailSheet'
 import { SearchPill } from './components/Navigation/SearchPill'
 import { BottomTabBar, TabType } from './components/Navigation/BottomTabBar'
+import { LiquidNavbar, NimbusIcons, LiquidNavItem } from '@/components/ui/liquid-glass-navbar'
+import Demo from '@/components/ui/demo'
 import { mockPins, mockTrips, currentUser } from './data/mockData'
 import { MemoryPin, Trip } from './types'
-import { PlusCircle, Compass, BookOpen, Layers } from 'lucide-react'
+import { PlusCircle, Compass, BookOpen, Layers, Droplets, LayoutGrid } from 'lucide-react'
+
+const travelLiquidTabs: LiquidNavItem[] = [
+  { label: 'Map', icon: NimbusIcons.globe, fx: 'spin' },
+  { label: 'Feed', icon: NimbusIcons.home, fx: 'glow' },
+  { label: 'Create', icon: <PlusCircle className="w-4 h-4" />, fx: 'pop' },
+  { label: 'Explore', icon: NimbusIcons.plane, fx: 'plane' },
+  { label: 'Passport', icon: NimbusIcons.user, fx: 'wave' },
+]
+
+const tabOrder: TabType[] = ['map', 'feed', 'create', 'explore', 'passport']
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('map')
+  const [navStyle, setNavStyle] = useState<'classic' | 'liquid' | 'demo'>('liquid')
   const [selectedPin, setSelectedPin] = useState<MemoryPin | null>(null)
   const [activeTrip, setActiveTrip] = useState<Trip | null>(mockTrips[2])
   const [showRoute, setShowRoute] = useState<boolean>(true)
@@ -63,8 +76,62 @@ export const App: React.FC = () => {
     setSelectedPin(null)
   }
 
+  // Render author's standalone Demo component when demo mode is selected
+  if (navStyle === 'demo') {
+    return (
+      <div className="relative w-full h-screen">
+        <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
+          <button
+            onClick={() => setNavStyle('liquid')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-charcoal border border-surface-border shadow-elevated hover:bg-white"
+          >
+            ← Return to Travel Map
+          </button>
+        </div>
+        <Demo />
+      </div>
+    )
+  }
+
+  const activeIndex = tabOrder.indexOf(activeTab)
+
   return (
     <AppShell>
+      {/* Floating Navbar Style Switcher (Top Left) */}
+      <div className="absolute top-4 left-4 z-[700] flex items-center gap-1 p-1 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
+        <button
+          onClick={() => setNavStyle('liquid')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
+            navStyle === 'liquid'
+              ? 'bg-azure text-white font-semibold shadow-xs'
+              : 'text-charcoal-secondary hover:text-charcoal'
+          }`}
+          title="Nimbus UI Liquid Glass Waterline Navbar with WebGL shader & plip sound"
+        >
+          <Droplets className="w-3.5 h-3.5" />
+          <span>Liquid Nav</span>
+        </button>
+        <button
+          onClick={() => setNavStyle('classic')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
+            navStyle === 'classic'
+              ? 'bg-charcoal text-white font-semibold shadow-xs'
+              : 'text-charcoal-secondary hover:text-charcoal'
+          }`}
+          title="Classic Apple-style bottom tab bar"
+        >
+          <LayoutGrid className="w-3.5 h-3.5" />
+          <span>Classic</span>
+        </button>
+        <button
+          onClick={() => setNavStyle('demo')}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium text-charcoal-secondary hover:text-charcoal transition-all"
+          title="Open standalone Nimbus UI Waterline demo screen"
+        >
+          <span>Demo Screen</span>
+        </button>
+      </div>
+
       {activeTab === 'map' && (
         <div className="relative w-full h-full flex flex-col min-h-0 flex-1 overflow-hidden">
           <div className="flex-1 w-full h-full relative min-h-0">
@@ -79,7 +146,7 @@ export const App: React.FC = () => {
               zoomLevel={mapZoom}
             />
 
-            <div className="absolute bottom-20 inset-x-4 z-[400] flex flex-col gap-2 pointer-events-none">
+            <div className={`absolute ${navStyle === 'liquid' ? 'bottom-24' : 'bottom-20'} inset-x-4 z-[400] flex flex-col gap-2 pointer-events-none transition-all`}>
               <SearchPill
                 onSearchChange={setSearchQuery}
                 onSelectLocation={handleSelectLocation}
@@ -95,12 +162,24 @@ export const App: React.FC = () => {
             />
           </div>
 
-          <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+          {navStyle === 'classic' ? (
+            <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+          ) : (
+            <div className="absolute bottom-5 inset-x-0 z-[500] flex justify-center pointer-events-auto">
+              <LiquidNavbar
+                tone="light"
+                sound={true}
+                active={activeIndex >= 0 ? activeIndex : 0}
+                onChange={(i) => setActiveTab(tabOrder[i])}
+                items={travelLiquidTabs}
+              />
+            </div>
+          )}
         </div>
       )}
 
       {activeTab === 'feed' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center">
+        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <Compass className="w-7 h-7" />
           </div>
@@ -115,13 +194,25 @@ export const App: React.FC = () => {
             Back to Live Map
           </button>
           <div className="mt-auto w-full">
-            <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            {navStyle === 'classic' ? (
+              <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            ) : (
+              <div className="w-full flex justify-center py-2">
+                <LiquidNavbar
+                  tone="light"
+                  sound={true}
+                  active={1}
+                  onChange={(i) => setActiveTab(tabOrder[i])}
+                  items={travelLiquidTabs}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {activeTab === 'create' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center">
+        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <PlusCircle className="w-7 h-7" />
           </div>
@@ -136,13 +227,25 @@ export const App: React.FC = () => {
             Back to Live Map
           </button>
           <div className="mt-auto w-full">
-            <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            {navStyle === 'classic' ? (
+              <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            ) : (
+              <div className="w-full flex justify-center py-2">
+                <LiquidNavbar
+                  tone="light"
+                  sound={true}
+                  active={2}
+                  onChange={(i) => setActiveTab(tabOrder[i])}
+                  items={travelLiquidTabs}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {activeTab === 'explore' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center">
+        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <Layers className="w-7 h-7" />
           </div>
@@ -157,13 +260,25 @@ export const App: React.FC = () => {
             Back to Live Map
           </button>
           <div className="mt-auto w-full">
-            <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            {navStyle === 'classic' ? (
+              <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            ) : (
+              <div className="w-full flex justify-center py-2">
+                <LiquidNavbar
+                  tone="light"
+                  sound={true}
+                  active={3}
+                  onChange={(i) => setActiveTab(tabOrder[i])}
+                  items={travelLiquidTabs}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {activeTab === 'passport' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center">
+        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <BookOpen className="w-7 h-7" />
           </div>
@@ -178,7 +293,19 @@ export const App: React.FC = () => {
             Back to Live Map
           </button>
           <div className="mt-auto w-full">
-            <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            {navStyle === 'classic' ? (
+              <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
+            ) : (
+              <div className="w-full flex justify-center py-2">
+                <LiquidNavbar
+                  tone="light"
+                  sound={true}
+                  active={4}
+                  onChange={(i) => setActiveTab(tabOrder[i])}
+                  items={travelLiquidTabs}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
