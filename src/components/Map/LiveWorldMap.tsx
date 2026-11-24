@@ -14,20 +14,24 @@ interface LiveWorldMapProps {
   zoomLevel?: number
 }
 
-// Map styles with Apple Maps (CartoDB Voyager) as the default primary
-const MAP_STYLES = {
-  apple: {
-    name: 'Apple Maps Style',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+// Ultra High-DPI Retina Apple Maps Tile Configurations
+const APPLE_MAP_STYLES = {
+  appleRetina: {
+    name: 'Apple Maps (Retina 4K)',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; CARTO',
     maxZoom: 20,
+    tileSize: 512,
+    zoomOffset: -1,
     subdomains: 'abcd',
   },
-  appleMuted: {
-    name: 'Apple Light Clean',
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  appleMutedRetina: {
+    name: 'Apple Minimal Light',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; CARTO',
-    maxZoom: 19,
+    maxZoom: 20,
+    tileSize: 512,
+    zoomOffset: -1,
     subdomains: 'abcd',
   },
   osmStandard: {
@@ -35,6 +39,8 @@ const MAP_STYLES = {
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
     subdomains: 'abc',
   }
 }
@@ -55,7 +61,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   const markersLayerRef = useRef<L.LayerGroup | null>(null)
   const routeLayerRef = useRef<L.Polyline | null>(null)
 
-  const [activeStyleKey, setActiveStyleKey] = useState<keyof typeof MAP_STYLES>('apple')
+  const [activeStyleKey, setActiveStyleKey] = useState<keyof typeof APPLE_MAP_STYLES>('appleRetina')
   const [showStyleMenu, setShowStyleMenu] = useState(false)
 
   // Initialize Map
@@ -74,11 +80,13 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       minZoom: 2,
     })
 
-    // Apple Maps aesthetic layer (Carto Voyager)
-    const initialConfig = MAP_STYLES[activeStyleKey]
+    // Apple Maps High-DPI Retina Tile Layer
+    const initialConfig = APPLE_MAP_STYLES[activeStyleKey]
     const tileLayer = L.tileLayer(initialConfig.url, {
       attribution: initialConfig.attribution,
       maxZoom: initialConfig.maxZoom,
+      tileSize: initialConfig.tileSize,
+      zoomOffset: initialConfig.zoomOffset,
       subdomains: initialConfig.subdomains,
     }).addTo(map)
 
@@ -91,7 +99,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     // Ensure seamless sizing without grey tiles
     const resizeTimer = setTimeout(() => {
       map.invalidateSize()
-    }, 100)
+    }, 120)
 
     const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize()
@@ -107,7 +115,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   }, [])
 
   // Switch Map Style
-  const switchMapStyle = (key: keyof typeof MAP_STYLES) => {
+  const switchMapStyle = (key: keyof typeof APPLE_MAP_STYLES) => {
     setActiveStyleKey(key)
     setShowStyleMenu(false)
 
@@ -118,10 +126,12 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       map.removeLayer(tileLayerRef.current)
     }
 
-    const nextConfig = MAP_STYLES[key]
+    const nextConfig = APPLE_MAP_STYLES[key]
     const newTileLayer = L.tileLayer(nextConfig.url, {
       attribution: nextConfig.attribution,
       maxZoom: nextConfig.maxZoom,
+      tileSize: nextConfig.tileSize,
+      zoomOffset: nextConfig.zoomOffset,
       subdomains: nextConfig.subdomains,
     }).addTo(map)
 
@@ -154,8 +164,8 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       const customIcon = L.divIcon({
         className: 'signature-pin-wrapper',
         html: markerHtml,
-        iconSize: [62, 54],
-        iconAnchor: [31, 54],
+        iconSize: [64, 56],
+        iconAnchor: [32, 56],
       })
 
       const marker = L.marker(pin.coordinates, { icon: customIcon })
@@ -206,18 +216,18 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#F2EFE9]">
+    <div className="relative w-full h-full overflow-hidden bg-[#F4F2EC]">
       {/* Map Canvas */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
       {/* Floating Apple-Style Header Pill */}
       <div className="absolute top-4 left-4 right-4 z-[400] flex items-center justify-between pointer-events-none animate-fade-in">
-        <div className="pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+        <div className="pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-azure opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-azure"></span>
           </span>
-          <span className="text-xs font-semibold text-charcoal tracking-tight">Apple Maps Style</span>
+          <span className="text-xs font-semibold text-charcoal tracking-tight">Apple Maps</span>
           <span className="text-xs text-charcoal-muted">·</span>
           <span className="text-xs font-medium text-azure">{pins.length} Friends Active</span>
         </div>
@@ -229,7 +239,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
             className={`pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-subtle transition-all active:scale-95 ${
               showRoute
                 ? 'bg-azure text-white border-azure shadow-[0_4px_14px_rgba(26,148,255,0.35)]'
-                : 'bg-white/90 backdrop-blur-xl text-charcoal border-white/60 hover:border-azure/40'
+                : 'bg-white/92 backdrop-blur-xl text-charcoal border-white/60 hover:border-azure/40'
             }`}
           >
             <RouteIcon className="w-3.5 h-3.5" />
@@ -240,19 +250,17 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
 
       {/* Floating Apple Map Controls (Right Side) */}
       <div className="absolute top-16 right-4 z-[400] flex flex-col gap-2.5">
-        {/* Apple Compass Pill */}
+        {/* Apple Compass Button */}
         <button
           onClick={handleRecenter}
           aria-label="Re-center on current location"
-          className="w-11 h-11 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center justify-center text-charcoal hover:text-azure transition-all active:scale-92 group"
+          className="w-11 h-11 rounded-2xl bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center justify-center text-charcoal hover:text-azure transition-all active:scale-92 group"
         >
-          <div className="relative flex items-center justify-center">
-            <Compass className="w-5 h-5 text-[#E03131] transition-transform duration-300 group-hover:rotate-45" />
-          </div>
+          <Compass className="w-5 h-5 text-[#E03131] transition-transform duration-300 group-hover:rotate-45" />
         </button>
 
         {/* Zoom Controls */}
-        <div className="flex flex-col rounded-2xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-[0_6px_20px_rgba(0,0,0,0.08)] overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_6px_20px_rgba(0,0,0,0.08)] overflow-hidden">
           <button
             onClick={handleZoomIn}
             aria-label="Zoom in"
@@ -277,7 +285,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
             className={`w-11 h-11 rounded-2xl border shadow-[0_6px_20px_rgba(0,0,0,0.08)] flex items-center justify-center transition-all active:scale-92 ${
               showStyleMenu
                 ? 'bg-charcoal text-white border-charcoal'
-                : 'bg-white/90 backdrop-blur-xl text-charcoal border-white/60 hover:text-azure'
+                : 'bg-white/92 backdrop-blur-xl text-charcoal border-white/60 hover:text-azure'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -289,8 +297,8 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
               <span className="text-[10px] font-semibold text-charcoal-muted uppercase px-2 py-1 tracking-wider">
                 Map Theme
               </span>
-              {(Object.keys(MAP_STYLES) as Array<keyof typeof MAP_STYLES>).map((key) => {
-                const style = MAP_STYLES[key]
+              {(Object.keys(APPLE_MAP_STYLES) as Array<keyof typeof APPLE_MAP_STYLES>).map((key) => {
+                const style = APPLE_MAP_STYLES[key]
                 const isSelected = activeStyleKey === key
                 return (
                   <button
