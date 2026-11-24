@@ -76,17 +76,17 @@ export const PinDetailSheet: React.FC<PinDetailSheetProps> = ({
 
       {/* Sheet Container with slide-up and slide-down */}
       <div
-        className={`relative mx-auto max-w-md w-full bg-card rounded-t-[28px] shadow-floating border-t border-surface-border overflow-hidden ${
+        className={`relative mx-auto max-w-md w-full max-h-[85dvh] flex flex-col bg-card rounded-t-[28px] shadow-floating border-t border-surface-border overflow-hidden ${
           isClosing ? 'animate-slide-down' : 'animate-slide-up'
         }`}
       >
         {/* Drag handle */}
-        <div className="w-full pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleClose}>
+        <div className="w-full pt-3 pb-1 flex justify-center cursor-pointer shrink-0" onClick={handleClose}>
           <div className="w-10 h-1 rounded-full bg-surface-border hover:bg-charcoal-muted transition-colors" />
         </div>
 
         {/* Header Bar */}
-        <div className="px-5 py-2 flex items-center justify-between">
+        <div className="px-5 py-2 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="relative">
               <img
@@ -129,125 +129,128 @@ export const PinDetailSheet: React.FC<PinDetailSheetProps> = ({
           </button>
         </div>
 
-        {/* Photo Gallery with smooth transitions */}
-        <div className="relative px-5 pt-2">
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-surface-muted shadow-subtle group">
-            <img
-              src={pin.photos[activePhotoIndex]}
-              alt={pin.title}
-              key={activePhotoIndex}
-              className="w-full h-full object-cover animate-fade-in transition-transform duration-500 group-hover:scale-102"
-            />
+        {/* Scrollable Body on Mobile */}
+        <div className="overflow-y-auto overscroll-contain flex-1 no-scrollbar pb-6">
+          {/* Photo Gallery with smooth transitions */}
+          <div className="relative px-5 pt-2">
+            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-surface-muted shadow-subtle group">
+              <img
+                src={pin.photos[activePhotoIndex]}
+                alt={pin.title}
+                key={activePhotoIndex}
+                className="w-full h-full object-cover animate-fade-in transition-transform duration-500 group-hover:scale-102"
+              />
 
-            {pin.photos.length > 1 && (
-              <>
-                {activePhotoIndex > 0 && (
-                  <button
-                    onClick={prevPhoto}
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center text-charcoal shadow-sm hover:bg-white transition-all active:scale-95"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                )}
-                {activePhotoIndex < pin.photos.length - 1 && (
-                  <button
-                    onClick={nextPhoto}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center text-charcoal shadow-sm hover:bg-white transition-all active:scale-95"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">
-                  {pin.photos.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        idx === activePhotoIndex ? 'w-5 bg-white shadow-sm' : 'w-1.5 bg-white/60'
-                      }`}
+              {pin.photos.length > 1 && (
+                <>
+                  {activePhotoIndex > 0 && (
+                    <button
+                      onClick={prevPhoto}
+                      className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center text-charcoal shadow-sm hover:bg-white transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                  )}
+                  {activePhotoIndex < pin.photos.length - 1 && (
+                    <button
+                      onClick={nextPhoto}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center text-charcoal shadow-sm hover:bg-white transition-all active:scale-95"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
+                  <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">
+                    {pin.photos.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          idx === activePhotoIndex ? 'w-5 bg-white shadow-sm' : 'w-1.5 bg-white/60'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal/75 backdrop-blur-md text-white text-xs font-medium shadow-sm">
+                <MapPin className="w-3 h-3 text-azure" />
+                <span className="truncate max-w-[200px]">{pin.locationName}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Content & Details */}
+          <div className="px-5 py-4 space-y-3">
+            <div>
+              <h3 className="font-semibold text-base text-charcoal leading-snug">{pin.title}</h3>
+              <p className="mt-1 text-sm text-charcoal-secondary leading-relaxed">{pin.caption}</p>
+            </div>
+
+            {pin.companions && pin.companions.length > 0 && (
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-xs text-charcoal-muted">Exploring with</span>
+                <div className="flex -space-x-1.5 overflow-hidden">
+                  {pin.companions.map((comp) => (
+                    <img
+                      key={comp.id}
+                      src={comp.avatarUrl}
+                      alt={comp.name}
+                      title={comp.name}
+                      className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover shadow-2xs"
                     />
                   ))}
                 </div>
-              </>
-            )}
-
-            <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal/75 backdrop-blur-md text-white text-xs font-medium shadow-sm">
-              <MapPin className="w-3 h-3 text-azure" />
-              <span className="truncate max-w-[200px]">{pin.locationName}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content & Details */}
-        <div className="px-5 py-4 space-y-3">
-          <div>
-            <h3 className="font-semibold text-base text-charcoal leading-snug">{pin.title}</h3>
-            <p className="mt-1 text-sm text-charcoal-secondary leading-relaxed">{pin.caption}</p>
-          </div>
-
-          {pin.companions && pin.companions.length > 0 && (
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-xs text-charcoal-muted">Exploring with</span>
-              <div className="flex -space-x-1.5 overflow-hidden">
-                {pin.companions.map((comp) => (
-                  <img
-                    key={comp.id}
-                    src={comp.avatarUrl}
-                    alt={comp.name}
-                    title={comp.name}
-                    className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover shadow-2xs"
-                  />
-                ))}
               </div>
-            </div>
-          )}
-
-          {/* Emoji Reactions */}
-          <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar">
-            {reactions.map((react) => (
-              <button
-                key={react.emoji}
-                onClick={() => handleToggleReaction(react.emoji)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all active:scale-95 ${
-                  react.hasReacted
-                    ? 'bg-azure-light border-azure/40 text-azure shadow-subtle'
-                    : 'bg-surface-muted border-surface-border text-charcoal hover:border-charcoal-muted/30'
-                }`}
-              >
-                <span>{react.emoji}</span>
-                <span className="font-semibold">{react.count}</span>
-              </button>
-            ))}
-            <button
-              onClick={() => handleToggleReaction('❤️')}
-              className="flex items-center justify-center w-8 h-8 rounded-full border border-surface-border bg-surface-muted text-charcoal-muted hover:text-charcoal transition-colors active:scale-95"
-            >
-              <Heart className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Actions */}
-          <div className="pt-2 flex items-center gap-3">
-            {pin.tripId && onViewRoute && (
-              <button
-                onClick={() => onViewRoute(pin.tripId!)}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-azure text-white text-sm font-semibold shadow-subtle hover:bg-azure-dark transition-all active:scale-98"
-              >
-                <Route className="w-4 h-4" />
-                <span>View Full Trip Route</span>
-              </button>
             )}
 
-            <button
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({ title: pin.title, text: pin.caption, url: window.location.href })
-                }
-              }}
-              className="w-12 h-12 rounded-xl border border-surface-border bg-surface-muted flex items-center justify-center text-charcoal hover:bg-surface-border transition-colors active:scale-95"
-              aria-label="Share pin"
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
+            {/* Emoji Reactions */}
+            <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar">
+              {reactions.map((react) => (
+                <button
+                  key={react.emoji}
+                  onClick={() => handleToggleReaction(react.emoji)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all active:scale-95 ${
+                    react.hasReacted
+                      ? 'bg-azure-light border-azure/40 text-azure shadow-subtle'
+                      : 'bg-surface-muted border-surface-border text-charcoal hover:border-charcoal-muted/30'
+                  }`}
+                >
+                  <span>{react.emoji}</span>
+                  <span className="font-semibold">{react.count}</span>
+                </button>
+              ))}
+              <button
+                onClick={() => handleToggleReaction('❤️')}
+                className="flex items-center justify-center w-8 h-8 rounded-full border border-surface-border bg-surface-muted text-charcoal-muted hover:text-charcoal transition-colors active:scale-95"
+              >
+                <Heart className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 flex items-center gap-3">
+              {pin.tripId && onViewRoute && (
+                <button
+                  onClick={() => onViewRoute(pin.tripId!)}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-azure text-white text-sm font-semibold shadow-subtle hover:bg-azure-dark transition-all active:scale-98"
+                >
+                  <Route className="w-4 h-4" />
+                  <span>View Full Trip Route</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: pin.title, text: pin.caption, url: window.location.href })
+                  }
+                }}
+                className="w-12 h-12 rounded-xl border border-surface-border bg-surface-muted flex items-center justify-center text-charcoal hover:bg-surface-border transition-colors active:scale-95"
+                aria-label="Share pin"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

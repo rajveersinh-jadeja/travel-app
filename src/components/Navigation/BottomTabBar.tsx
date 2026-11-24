@@ -14,7 +14,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
   onSelectTab,
 }) => {
   return (
-    <div className="w-full bg-white/95 backdrop-blur-md border-t border-surface-border px-4 py-2 pb-5 z-[450] pointer-events-auto">
+    <div className="w-full bg-white/95 backdrop-blur-md border-t border-surface-border px-4 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] z-[450] pointer-events-auto">
       <div className="max-w-md mx-auto flex items-center justify-between">
         <button
           onClick={() => onSelectTab('map')}

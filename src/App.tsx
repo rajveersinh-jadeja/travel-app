@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { AppShell } from './components/Layout/AppShell'
 import { LiveWorldMap } from './components/Map/LiveWorldMap'
 import { PinDetailSheet } from './components/Map/PinDetailSheet'
@@ -32,6 +32,19 @@ export const App: React.FC = () => {
   const [mapCenter, setMapCenter] = useState<[number, number]>([37.7749, -122.4194])
   const [mapZoom, setMapZoom] = useState<number>(11)
   const [searchQuery, setSearchQuery] = useState<string>('')
+
+  // Track mobile viewport for responsive behavior
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    return typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const filteredPins = useMemo(() => {
     if (!searchQuery.trim()) return mockPins
@@ -81,11 +94,11 @@ export const App: React.FC = () => {
   // Full-screen demo renders
   if (navStyle === 'demo-waterline') {
     return (
-      <div className="relative w-full h-screen">
+      <div className="relative w-full h-[100dvh] overflow-hidden">
         <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
           <button
             onClick={() => setNavStyle('liquid')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-charcoal border border-surface-border shadow-elevated hover:bg-white"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-charcoal border border-surface-border shadow-elevated hover:bg-white active:scale-95 transition-all"
           >
             ← Return to Travel Map
           </button>
@@ -97,11 +110,11 @@ export const App: React.FC = () => {
 
   if (navStyle === 'demo-folders') {
     return (
-      <div className="relative w-full h-screen overflow-y-auto">
-        <div className="sticky top-4 left-4 z-50 flex items-center gap-2 px-4">
+      <div className="relative w-full h-[100dvh] overflow-y-auto">
+        <div className="sticky top-4 left-4 z-50 flex items-center gap-2 px-4 pt-2">
           <button
             onClick={() => setNavStyle('liquid')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-charcoal border border-surface-border shadow-elevated hover:bg-white"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-semibold text-charcoal border border-surface-border shadow-elevated hover:bg-white active:scale-95 transition-all"
           >
             ← Return to Travel Map
           </button>
@@ -115,39 +128,39 @@ export const App: React.FC = () => {
 
   return (
     <AppShell>
-      {/* Floating Navbar & Demo Switcher Pill (Top Left) */}
-      <div className="absolute top-4 left-4 z-[700] flex items-center gap-1 p-1 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
+      {/* Floating Navbar & Demo Switcher Pill (Top Left - safe from notch & dynamic island) */}
+      <div className="absolute top-12 sm:top-4 left-3 sm:left-4 z-[700] flex items-center gap-1 p-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
         <button
           onClick={() => setNavStyle('liquid')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
             navStyle === 'liquid'
               ? 'bg-azure text-white font-semibold shadow-xs'
               : 'text-charcoal-secondary hover:text-charcoal'
           }`}
           title="Nimbus UI Liquid Glass Waterline Navbar"
         >
-          <Droplets className="w-3.5 h-3.5" />
-          <span>Liquid Nav</span>
+          <Droplets className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden xs:inline sm:inline">Liquid</span>
         </button>
         <button
           onClick={() => setNavStyle('classic')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
             navStyle === 'classic'
               ? 'bg-charcoal text-white font-semibold shadow-xs'
               : 'text-charcoal-secondary hover:text-charcoal'
           }`}
           title="Classic Apple-style bottom tab bar"
         >
-          <LayoutGrid className="w-3.5 h-3.5" />
-          <span>Classic</span>
+          <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden xs:inline sm:inline">Classic</span>
         </button>
         <button
           onClick={() => setNavStyle('demo-folders')}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium text-charcoal-secondary hover:text-charcoal transition-all"
+          className="flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium text-charcoal-secondary hover:text-charcoal transition-all"
           title="Open Glass Folder Cards demo"
         >
-          <FolderHeart className="w-3.5 h-3.5 text-azure" />
-          <span>Folders Demo</span>
+          <FolderHeart className="w-3.5 h-3.5 text-azure shrink-0" />
+          <span className="hidden sm:inline">Folders</span>
         </button>
       </div>
 
@@ -165,7 +178,8 @@ export const App: React.FC = () => {
               zoomLevel={mapZoom}
             />
 
-            <div className={`absolute ${navStyle === 'liquid' ? 'bottom-24' : 'bottom-20'} inset-x-4 z-[400] flex flex-col gap-2 pointer-events-none transition-all`}>
+            {/* Responsive Search Pill Anchor */}
+            <div className={`absolute ${navStyle === 'liquid' ? 'bottom-20 sm:bottom-24' : 'bottom-16 sm:bottom-20'} inset-x-3 sm:inset-x-4 z-[400] flex flex-col gap-1.5 sm:gap-2 pointer-events-none transition-all`}>
               <SearchPill
                 onSearchChange={setSearchQuery}
                 onSelectLocation={handleSelectLocation}
@@ -184,10 +198,11 @@ export const App: React.FC = () => {
           {navStyle === 'classic' ? (
             <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
           ) : (
-            <div className="absolute bottom-5 inset-x-0 z-[500] flex justify-center pointer-events-auto">
+            <div className="absolute bottom-3 sm:bottom-5 inset-x-0 z-[500] flex justify-center pointer-events-auto pb-[env(safe-area-inset-bottom,0px)]">
               <LiquidNavbar
                 tone="light"
                 sound={true}
+                compact={isMobile}
                 active={activeIndex >= 0 ? activeIndex : 0}
                 onChange={(i) => setActiveTab(tabOrder[i])}
                 items={travelLiquidTabs}
@@ -198,7 +213,7 @@ export const App: React.FC = () => {
       )}
 
       {activeTab === 'feed' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-canvas p-4 sm:p-6 justify-center items-center text-center relative overflow-y-auto pt-16 sm:pt-8 pb-28 sm:pb-24">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <Compass className="w-7 h-7" />
           </div>
@@ -208,7 +223,7 @@ export const App: React.FC = () => {
           </p>
           <button
             onClick={() => setActiveTab('map')}
-            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark"
+            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark active:scale-95 transition-all"
           >
             Back to Live Map
           </button>
@@ -216,10 +231,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2">
+              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
+                  compact={isMobile}
                   active={1}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -231,7 +247,7 @@ export const App: React.FC = () => {
       )}
 
       {activeTab === 'create' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-canvas p-4 sm:p-6 justify-center items-center text-center relative overflow-y-auto pt-16 sm:pt-8 pb-28 sm:pb-24">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <PlusCircle className="w-7 h-7" />
           </div>
@@ -241,7 +257,7 @@ export const App: React.FC = () => {
           </p>
           <button
             onClick={() => setActiveTab('map')}
-            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark"
+            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark active:scale-95 transition-all"
           >
             Back to Live Map
           </button>
@@ -249,10 +265,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2">
+              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
+                  compact={isMobile}
                   active={2}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -264,7 +281,7 @@ export const App: React.FC = () => {
       )}
 
       {activeTab === 'explore' && (
-        <div className="flex-1 flex flex-col bg-canvas p-6 justify-center items-center text-center relative overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-canvas p-4 sm:p-6 justify-center items-center text-center relative overflow-y-auto pt-16 sm:pt-8 pb-28 sm:pb-24">
           <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-azure shadow-subtle mb-4">
             <Layers className="w-7 h-7" />
           </div>
@@ -274,7 +291,7 @@ export const App: React.FC = () => {
           </p>
           <button
             onClick={() => setActiveTab('map')}
-            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark"
+            className="mt-5 px-4 py-2 rounded-xl bg-azure text-white text-xs font-semibold shadow-subtle hover:bg-azure-dark active:scale-95 transition-all"
           >
             Back to Live Map
           </button>
@@ -282,10 +299,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2">
+              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
+                  compact={isMobile}
                   active={3}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -297,66 +315,66 @@ export const App: React.FC = () => {
       )}
 
       {activeTab === 'passport' && (
-        <div className="flex-1 flex flex-col bg-canvas overflow-y-auto relative">
+        <div className="flex-1 flex flex-col bg-canvas overflow-y-auto relative pt-12 sm:pt-4">
           {/* Passport Header */}
-          <div className="p-6 pb-2">
-            <div className="flex items-center gap-4">
+          <div className="p-4 sm:p-6 pb-2">
+            <div className="flex items-center gap-3 sm:gap-4">
               <img
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-elevated"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white shadow-elevated shrink-0"
               />
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold text-charcoal">{currentUser.name}</h1>
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-azure/10 text-azure text-[11px] font-semibold">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <h1 className="text-lg sm:text-xl font-bold text-charcoal truncate">{currentUser.name}</h1>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-azure/10 text-azure text-[10px] sm:text-[11px] font-semibold shrink-0">
                     <Sparkles className="w-3 h-3" />
                     Passport Pro
                   </span>
                 </div>
                 <p className="text-xs text-charcoal-secondary font-mono mt-0.5">{currentUser.handle}</p>
-                <p className="text-xs text-charcoal mt-1 max-w-sm">{currentUser.bio}</p>
+                <p className="text-xs text-charcoal mt-1 line-clamp-2 max-w-sm">{currentUser.bio}</p>
               </div>
             </div>
 
             {/* Metrics */}
-            <div className="grid grid-cols-3 gap-3 mt-5">
-              <div className="p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
-                <div className="text-xl font-bold text-charcoal">{currentUser.stats?.countries}</div>
-                <div className="text-[11px] text-charcoal-secondary font-medium">Countries</div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5">
+              <div className="p-2.5 sm:p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
+                <div className="text-lg sm:text-xl font-bold text-charcoal">{currentUser.stats?.countries}</div>
+                <div className="text-[10px] sm:text-[11px] text-charcoal-secondary font-medium">Countries</div>
               </div>
-              <div className="p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
-                <div className="text-xl font-bold text-charcoal">{currentUser.stats?.cities}</div>
-                <div className="text-[11px] text-charcoal-secondary font-medium">Cities</div>
+              <div className="p-2.5 sm:p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
+                <div className="text-lg sm:text-xl font-bold text-charcoal">{currentUser.stats?.cities}</div>
+                <div className="text-[10px] sm:text-[11px] text-charcoal-secondary font-medium">Cities</div>
               </div>
-              <div className="p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
-                <div className="text-xl font-bold text-azure">{currentUser.stats?.totalPins}</div>
-                <div className="text-[11px] text-charcoal-secondary font-medium">Memory Pins</div>
+              <div className="p-2.5 sm:p-3 bg-white rounded-2xl border border-surface-border shadow-subtle text-center">
+                <div className="text-lg sm:text-xl font-bold text-azure">{currentUser.stats?.totalPins}</div>
+                <div className="text-[10px] sm:text-[11px] text-charcoal-secondary font-medium">Memory Pins</div>
               </div>
             </div>
           </div>
 
           {/* Glass Folder Trip Albums Section */}
-          <div className="p-6 pt-4">
-            <div className="flex items-center justify-between mb-4">
+          <div className="p-4 sm:p-6 pt-3">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <h2 className="text-base font-semibold text-charcoal flex items-center gap-2">
-                  <FolderHeart className="w-4 h-4 text-azure" />
+                <h2 className="text-sm sm:text-base font-semibold text-charcoal flex items-center gap-1.5 sm:gap-2">
+                  <FolderHeart className="w-4 h-4 text-azure shrink-0" />
                   Trip Journals & Albums
                 </h2>
-                <p className="text-xs text-charcoal-secondary">
-                  Interactive glass folders. Hover to lean, click to open & inspect photo sheets.
+                <p className="text-[11px] sm:text-xs text-charcoal-secondary">
+                  Tap to open & inspect photo memories.
                 </p>
               </div>
               <button
                 onClick={() => setNavStyle('demo-folders')}
-                className="text-xs font-semibold text-azure hover:underline"
+                className="text-xs font-semibold text-azure hover:underline shrink-0"
               >
-                View Fullscreen Grid →
+                Fullscreen Grid →
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 sm:gap-8 justify-items-center py-2 sm:py-4">
               {/* Bali Adventure Glass Folder */}
               <GlassFolder
                 label="Bali Island Traverse"
@@ -364,7 +382,7 @@ export const App: React.FC = () => {
                 seed={4}
                 action="more"
                 labelPlacement="bottom-left"
-                width={320}
+                width={isMobile ? 275 : 320}
                 files={[
                   { name: "Canggu Sunset Surf", meta: "Echo Beach · 6:45 PM", art: "ember" },
                   { name: "Ubud Sacred Forest", meta: "Monkey Forest · 11:20 AM", art: "verdant" },
@@ -390,7 +408,7 @@ export const App: React.FC = () => {
                 seed={8}
                 action="add"
                 labelPlacement="top-left"
-                width={320}
+                width={isMobile ? 275 : 320}
                 files={[
                   { name: "Reine Rorbuer Cabins", meta: "Lofoten · 2:15 PM", art: "aurora" },
                   { name: "Hamnøy Bridge Vista", meta: "Sunrise · 6:10 AM", art: "glacier" },
@@ -411,7 +429,7 @@ export const App: React.FC = () => {
                 seed={12}
                 action="more"
                 labelPlacement="top-right"
-                width={320}
+                width={isMobile ? 275 : 320}
                 files={[
                   { name: "Shibuya Crossing", meta: "Midnight Rush · 11:45 PM", art: "dusk" },
                   { name: "Omoide Yokocho", meta: "Yakitori Alley · 8:30 PM", art: "ember" },
@@ -432,14 +450,15 @@ export const App: React.FC = () => {
           </div>
 
           {/* Bottom Nav Bar */}
-          <div className="mt-auto w-full pt-6 sticky bottom-0 z-40 bg-canvas/80 backdrop-blur-md">
+          <div className="mt-auto w-full pt-4 sticky bottom-0 z-40 bg-canvas/80 backdrop-blur-md">
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2">
+              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
+                  compact={isMobile}
                   active={4}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
