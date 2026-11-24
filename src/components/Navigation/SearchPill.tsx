@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, MapPin, X, SlidersHorizontal } from 'lucide-react'
+import { Search, MapPin, X, SlidersHorizontal, Mic } from 'lucide-react'
 
 interface LocationFilter {
   id: string
@@ -51,24 +51,25 @@ export const SearchPill: React.FC<SearchPillProps> = ({
 
   return (
     <div className="w-full flex flex-col gap-2 pointer-events-auto">
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-1">
+      {/* Quick Location Chips */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 px-0.5">
         {locationFilters.map((loc) => {
           const isActive = activeLocationId === loc.id
           return (
             <button
               key={loc.id}
               onClick={() => handleSelectFilter(loc)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 active:scale-95 shadow-subtle ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
                 isActive
-                  ? 'bg-charcoal text-white shadow-elevated'
-                  : 'bg-white/90 backdrop-blur-md text-charcoal border border-surface-border hover:border-charcoal-muted'
+                  ? 'bg-azure text-white shadow-[0_4px_14px_rgba(26,148,255,0.35)]'
+                  : 'bg-white/90 backdrop-blur-xl text-charcoal border border-white/60 hover:bg-white'
               }`}
             >
-              <MapPin className={`w-3 h-3 ${isActive ? 'text-azure' : 'text-charcoal-muted'}`} />
+              <MapPin className={`w-3 h-3 ${isActive ? 'text-white' : 'text-azure'}`} />
               <span>{loc.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-surface-muted text-charcoal-muted'
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isActive ? 'bg-white/25 text-white' : 'bg-surface-muted text-charcoal-muted'
                 }`}
               >
                 {loc.count}
@@ -78,9 +79,10 @@ export const SearchPill: React.FC<SearchPillProps> = ({
         })}
       </div>
 
+      {/* Apple Maps Style Search Bar */}
       <div
-        className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 backdrop-blur-md border shadow-elevated transition-all duration-200 ${
-          isFocused ? 'border-azure ring-2 ring-azure/20' : 'border-surface-border'
+        className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/92 backdrop-blur-2xl border shadow-[0_12px_36px_rgba(0,0,0,0.12)] transition-all duration-200 ${
+          isFocused ? 'border-azure ring-2 ring-azure/20' : 'border-white/70'
         }`}
       >
         <Search className="w-4 h-4 text-charcoal-muted shrink-0" />
@@ -90,23 +92,31 @@ export const SearchPill: React.FC<SearchPillProps> = ({
           onChange={handleInputChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="Search friends, places, or trip albums..."
-          className="w-full bg-transparent text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none"
+          placeholder="Search friends, places, or albums..."
+          className="w-full bg-transparent text-sm text-charcoal placeholder:text-charcoal-muted/80 focus:outline-none font-medium"
         />
         {query ? (
           <button
             onClick={handleClear}
-            className="p-1 rounded-full hover:bg-surface-muted text-charcoal-muted"
+            className="p-1 rounded-full hover:bg-surface-muted text-charcoal-muted active:scale-90 transition-transform"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         ) : (
-          <button
-            aria-label="Filter settings"
-            className="p-1 rounded-full hover:bg-surface-muted text-charcoal-muted hover:text-charcoal transition-colors"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-1 text-charcoal-muted">
+            <button
+              aria-label="Voice search"
+              className="p-1 hover:text-charcoal transition-colors active:scale-90"
+            >
+              <Mic className="w-4 h-4" />
+            </button>
+            <button
+              aria-label="Filter"
+              className="p-1 hover:text-charcoal transition-colors active:scale-90"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
     </div>
