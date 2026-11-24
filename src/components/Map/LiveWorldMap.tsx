@@ -97,9 +97,13 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     mapInstanceRef.current = map
 
     // Ensure seamless sizing without grey tiles
-    const resizeTimer = setTimeout(() => {
-      map.invalidateSize()
-    }, 120)
+    map.invalidateSize()
+    const t1 = setTimeout(() => map.invalidateSize(), 80)
+    const t2 = setTimeout(() => map.invalidateSize(), 250)
+    const t3 = setTimeout(() => map.invalidateSize(), 500)
+
+    const handleWindowResize = () => map.invalidateSize()
+    window.addEventListener('resize', handleWindowResize)
 
     const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize()
@@ -107,7 +111,10 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     resizeObserver.observe(mapContainerRef.current)
 
     return () => {
-      clearTimeout(resizeTimer)
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+      window.removeEventListener('resize', handleWindowResize)
       resizeObserver.disconnect()
       map.remove()
       mapInstanceRef.current = null
@@ -216,9 +223,13 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#F4F2EC]">
+    <div className="relative w-full h-full flex-1 min-h-0 overflow-hidden bg-[#F4F2EC]">
       {/* Map Canvas */}
-      <div ref={mapContainerRef} className="w-full h-full z-0" />
+      <div
+        ref={mapContainerRef}
+        className="absolute inset-0 w-full h-full z-0"
+        style={{ width: '100%', height: '100%', minHeight: '100%' }}
+      />
 
       {/* Floating Apple-Style Header Pill */}
       <div className="absolute top-4 left-4 right-4 z-[400] flex items-center justify-between pointer-events-none animate-fade-in">

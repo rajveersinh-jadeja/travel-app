@@ -10,7 +10,12 @@
     --azure: #1A94FF;
   }
 
-  html, body {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
     background-color: var(--canvas-bg);
     color: var(--charcoal);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", -system-ui, sans-serif;
@@ -18,18 +23,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
-    margin: 0;
-    padding: 0;
   }
 }
 
 /* Apple Maps High-DPI Retina Container */
 .leaflet-container {
+  position: absolute !important;
+  inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  min-height: 100% !important;
   background-color: #F4F2EC !important;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important;
   outline: none;
+  z-index: 0;
 }
 
 /* Apple Maps Color Grading: Pastel blue water, soft sage parks, crisp ivory land */
@@ -75,6 +82,11 @@
 }
 
 /* Signature Apple-Inspired Memory Pin */
+.signature-pin-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
 .signature-pin-container {
   position: relative;
   cursor: pointer;

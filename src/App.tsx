@@ -66,8 +66,8 @@ export const App: React.FC = () => {
   return (
     <AppShell>
       {activeTab === 'map' && (
-        <div className="relative w-full h-full flex flex-col pt-10 sm:pt-0">
-          <div className="flex-1 w-full h-full relative">
+        <div className="relative w-full h-full flex flex-col min-h-0 flex-1 overflow-hidden">
+          <div className="flex-1 w-full h-full relative min-h-0">
             <LiveWorldMap
               pins={filteredPins}
               selectedPin={selectedPin}
