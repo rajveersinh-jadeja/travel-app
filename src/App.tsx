@@ -144,7 +144,6 @@ export const App: React.FC = () => {
               selectedPin={selectedPin}
               onSelectPin={(pin) => setSelectedPin(pin)}
               activeTrip={activeTrip}
-              onToggleTripRoute={() => setShowRoute((prev) => !prev)}
               showRoute={showRoute}
               centerCoordinates={mapCenter}
               zoomLevel={mapZoom}

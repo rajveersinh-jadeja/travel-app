@@ -173,46 +173,13 @@
   display: block;
 }
 
-/* Category Accent Badge on Pin (Apple HIG Category Palette) */
-.apple-pin-category-dot {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  width: 13px;
-  height: 13px;
-  border-radius: 9999px;
-  border: 2px solid #FFFFFF;
-  z-index: 5;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.apple-pin-avatar {
-  position: absolute;
-  top: -3px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 9999px;
-  border: 1.5px solid #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  background-color: #FFFFFF;
-  z-index: 4;
-}
-
-.apple-pin-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .apple-pin-stem {
   position: absolute;
   bottom: 2px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   background: #FFFFFF;
   border-radius: 1.5px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.12);
@@ -221,21 +188,6 @@
 
 .apple-pin-container.is-selected .apple-pin-stem {
   background: #007AFF;
-}
-
-/* Apple Pulse Radar on Selected Memory */
-.apple-pin-pulse {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 9999px;
-  background: rgba(0, 122, 255, 0.28);
-  pointer-events: none;
-  animation: appleRadarPulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  z-index: 0;
 }
 
 @keyframes appleRadarPulse {
