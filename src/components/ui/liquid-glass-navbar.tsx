@@ -113,15 +113,18 @@ const NIMBUS_CSS = `
 .nimbus-nav[data-compact="true"]{padding:4px 6px;gap:2px}
 .nimbus-nav[data-compact="true"] .nimbus-item{padding:0 11px;height:38px;gap:0}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (max-width:640px){
-  .nimbus-nav:not([data-compact="false"]){padding:4px 6px;gap:2px;max-width:calc(100vw - 16px)}
-  .nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 10px;height:38px;gap:0}
-  .nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.is-mobile-frame .nimbus-nav{padding:4px 6px!important;gap:2px!important;max-width:calc(100% - 24px)!important}
+.is-mobile-frame .nimbus-nav .nimbus-item{padding:0 10px!important;height:38px!important;gap:0!important}
+.is-mobile-frame .nimbus-nav .nimbus-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+@media (max-width:768px){
+  .nimbus-nav{padding:4px 6px!important;gap:2px!important;max-width:calc(100vw - 20px)!important}
+  .nimbus-nav .nimbus-item{padding:0 10px!important;height:38px!important;gap:0!important}
+  .nimbus-nav .nimbus-label{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
 }
 @media (max-width:360px){
-  .nimbus-nav{padding:3px 4px;gap:1px;max-width:calc(100vw - 12px)}
-  .nimbus-nav .nimbus-item{padding:0 8px;height:36px}
-  .nimbus-nav .nv-ico svg{width:16px;height:16px}
+  .nimbus-nav{padding:3px 4px!important;gap:1px!important;max-width:calc(100vw - 12px)!important}
+  .nimbus-nav .nimbus-item{padding:0 8px!important;height:36px!important}
+  .nimbus-nav .nv-ico svg{width:16px!important;height:16px!important}
 }
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
 `

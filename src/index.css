@@ -56,19 +56,19 @@
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Signature Apple Clean (No Street Labels): vibrant pastel saturation & clean contrast */
+/* Signature Apple Clean: calibrated pastel hue, soft blue oceans, sage green parks */
 .apple-clean-tiles {
-  filter: saturate(1.22) contrast(1.05) brightness(1.02);
+  filter: hue-rotate(-4deg) saturate(1.15) contrast(1.02) brightness(1.02);
 }
 
-/* Minimalist Ivory Style */
+/* Minimalist Ivory Style (Esri Light Gray Base) */
 .apple-minimal-tiles {
-  filter: saturate(0.85) contrast(1.08) brightness(1.06);
+  filter: contrast(1.06) brightness(1.03);
 }
 
-/* Dark Mode Style */
-.apple-dark-tiles {
-  filter: saturate(1.1) brightness(0.96);
+/* Apple Satellite Hybrid */
+.apple-satellite-tiles {
+  filter: saturate(1.18) contrast(1.08) brightness(0.98);
 }
 
 .leaflet-tile-loaded {
@@ -87,18 +87,19 @@
   }
 }
 
-/* Apple-style minimalist attribution */
+/* Apple-style minimalist attribution: cleanly floated in bottom-right corner above search pill */
 .leaflet-control-attribution {
-  font-size: 10px !important;
+  font-size: 9px !important;
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border-radius: 9999px !important;
-  margin: 10px !important;
-  padding: 3px 10px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
-  color: #6E6E73 !important;
+  margin: 8px 12px !important;
+  padding: 2px 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  color: #86868B !important;
+  pointer-events: auto !important;
 }
 
 .leaflet-control-attribution a {

@@ -18,48 +18,44 @@ interface LiveWorldMapProps {
   isActive?: boolean
 }
 
-// Polished Free OpenStreetMap Tile Configurations
-// Signature Apple Maps aesthetic: no street names / POI clutter, vibrant colors
+// Clean, 100% Free Basemap Configurations (No API Key Required, No Watermark)
+// Signature Apple Maps aesthetic: crisp pastel colors, soft terrain, zero clutter
 const APPLE_MAP_STYLES = {
   appleClean: {
-    name: 'Apple Maps (Clean, No Labels)',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; CARTO',
-    maxZoom: 20,
-    tileSize: 512,
-    zoomOffset: -1,
-    subdomains: 'abcd',
+    name: 'Apple Maps (Clean)',
+    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
     className: 'apple-clean-tiles',
   },
   appleMinimal: {
     name: 'Apple Light Minimal',
-    url: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; CARTO',
-    maxZoom: 20,
-    tileSize: 512,
-    zoomOffset: -1,
-    subdomains: 'abcd',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin',
+    maxZoom: 16,
+    tileSize: 256,
+    zoomOffset: 0,
     className: 'apple-minimal-tiles',
   },
-  appleDark: {
-    name: 'Apple Dark Mode (Clean)',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; CARTO',
-    maxZoom: 20,
-    tileSize: 512,
-    zoomOffset: -1,
-    subdomains: 'abcd',
-    className: 'apple-dark-tiles',
-  },
-  appleLabels: {
-    name: 'Apple Maps (With Street Names)',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; CARTO',
-    maxZoom: 20,
-    tileSize: 512,
-    zoomOffset: -1,
-    subdomains: 'abcd',
+  appleStreet: {
+    name: 'Apple Street Map',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, OpenStreetMap',
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
     className: 'apple-clean-tiles',
+  },
+  appleSatellite: {
+    name: 'Apple Satellite Hybrid',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
+    className: 'apple-satellite-tiles',
   },
 }
 
@@ -109,7 +105,6 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       maxZoom: initialConfig.maxZoom,
       tileSize: initialConfig.tileSize,
       zoomOffset: initialConfig.zoomOffset,
-      subdomains: initialConfig.subdomains,
       className: initialConfig.className,
     }).addTo(map)
 
@@ -171,7 +166,6 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       maxZoom: nextConfig.maxZoom,
       tileSize: nextConfig.tileSize,
       zoomOffset: nextConfig.zoomOffset,
-      subdomains: nextConfig.subdomains,
       className: nextConfig.className,
     }).addTo(map)
 
@@ -264,8 +258,8 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
         style={{ width: '100%', height: '100%', minHeight: '100%' }}
       />
 
-      {/* Floating Header: Status Pill & Dynamic Friend Switcher */}
-      <div className="absolute top-14 sm:top-16 left-3 sm:left-4 z-[400] flex flex-wrap items-center gap-1.5 sm:gap-2 pointer-events-none animate-fade-in max-w-[calc(100%-110px)] sm:max-w-[calc(100%-80px)]">
+      {/* Floating Header: Status Pill & Dynamic Friend Switcher (Aligned below safe area / notch) */}
+      <div className="absolute top-14 sm:top-5 left-3 sm:left-4 z-[400] flex flex-wrap items-center gap-1.5 sm:gap-2 pointer-events-none animate-fade-in max-w-[calc(100%-140px)] sm:max-w-[calc(100%-180px)]">
         {/* Apple Maps Clean Indicator */}
         <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
           <span className="relative flex h-2 w-2">
@@ -279,7 +273,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
 
         {/* Dynamic Per-User Switcher */}
         {users && onSelectUser && (
-          <div className="pointer-events-auto flex items-center gap-1 p-0.5 sm:p-1 rounded-full bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.06)] overflow-x-auto no-scrollbar max-w-[220px] sm:max-w-[340px]">
+          <div className="pointer-events-auto flex items-center gap-1 p-0.5 sm:p-1 rounded-full bg-white/92 backdrop-blur-xl border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.06)] overflow-x-auto no-scrollbar max-w-[140px] sm:max-w-[340px]">
             <button
               onClick={() => onSelectUser('all')}
               className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold transition-all ${
@@ -316,25 +310,25 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
         )}
       </div>
 
-      {/* Floating Active Trip Route Toggle (Top Right) */}
+      {/* Floating Active Trip Route Toggle (Top Right - Aligned below safe area / notch) */}
       {activeTrip && (
-        <div className="absolute top-12 sm:top-4 right-3 sm:right-4 z-[400] flex items-center">
+        <div className="absolute top-14 sm:top-5 right-3 sm:right-4 z-[400] flex items-center pointer-events-auto">
           <button
             onClick={onToggleTripRoute}
-            className={`pointer-events-auto flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-subtle transition-all active:scale-95 ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-subtle transition-all active:scale-95 ${
               showRoute
                 ? 'bg-azure text-white border-azure shadow-[0_4px_14px_rgba(26,148,255,0.35)]'
                 : 'bg-white/92 backdrop-blur-xl text-charcoal border-white/60 hover:border-azure/40'
             }`}
           >
             <RouteIcon className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate max-w-[110px] sm:max-w-none">{showRoute ? activeTrip.title : 'Show Route'}</span>
+            <span className="truncate max-w-[100px] sm:max-w-none">{showRoute ? activeTrip.title : 'Show Route'}</span>
           </button>
         </div>
       )}
 
-      {/* Floating Apple Map Controls (Right Side) */}
-      <div className="absolute top-24 sm:top-16 right-3 sm:right-4 z-[400] flex flex-col gap-2">
+      {/* Floating Apple Map Controls (Right Side - clean vertical ladder) */}
+      <div className="absolute top-28 sm:top-18 right-3 sm:right-4 z-[400] flex flex-col gap-2">
         {/* Apple Compass Button */}
         <button
           onClick={handleRecenter}

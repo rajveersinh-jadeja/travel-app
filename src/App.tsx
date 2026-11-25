@@ -130,40 +130,21 @@ export const App: React.FC = () => {
   const folderWidth = isMobileView ? Math.min(270, typeof window !== 'undefined' ? Math.max(250, window.innerWidth - 48) : 270) : 320
 
   return (
-    <AppShell isDeviceFrame={isDeviceFrame} onToggleDeviceFrame={setIsDeviceFrame}>
-      {/* Floating Navbar & Demo Switcher Pill (Top Left - safe from notch & dynamic island) */}
-      <div className="absolute top-12 sm:top-4 left-3 sm:left-4 z-[700] flex items-center gap-1 p-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
+    <AppShell
+      isDeviceFrame={isDeviceFrame}
+      onToggleDeviceFrame={setIsDeviceFrame}
+      navStyle={navStyle}
+      onSelectNavStyle={setNavStyle}
+    >
+      {/* Discreet Mobile Quick Mode Toggle (Only on native mobile where desktop header is hidden) */}
+      <div className="sm:hidden absolute top-14 left-3 z-[450] flex items-center pointer-events-auto">
         <button
-          onClick={() => setNavStyle('liquid')}
-          className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
-            navStyle === 'liquid'
-              ? 'bg-azure text-white font-semibold shadow-xs'
-              : 'text-charcoal-secondary hover:text-charcoal'
-          }`}
-          title="Nimbus UI Liquid Glass Waterline Navbar"
+          onClick={() => setNavStyle(navStyle === 'liquid' ? 'classic' : 'liquid')}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-subtle text-xs text-charcoal font-semibold active:scale-95 transition-all"
+          title="Toggle Navigation Style"
         >
-          <Droplets className="w-3.5 h-3.5 shrink-0" />
-          <span className="hidden xs:inline sm:inline">Liquid</span>
-        </button>
-        <button
-          onClick={() => setNavStyle('classic')}
-          className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium transition-all ${
-            navStyle === 'classic'
-              ? 'bg-charcoal text-white font-semibold shadow-xs'
-              : 'text-charcoal-secondary hover:text-charcoal'
-          }`}
-          title="Classic Apple-style bottom tab bar"
-        >
-          <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
-          <span className="hidden xs:inline sm:inline">Classic</span>
-        </button>
-        <button
-          onClick={() => setNavStyle('demo-folders')}
-          className="flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full font-medium text-charcoal-secondary hover:text-charcoal transition-all"
-          title="Open Glass Folder Cards demo"
-        >
-          <FolderHeart className="w-3.5 h-3.5 text-azure shrink-0" />
-          <span className="hidden sm:inline">Folders</span>
+          {navStyle === 'liquid' ? <Droplets className="w-3.5 h-3.5 text-azure" /> : <LayoutGrid className="w-3.5 h-3.5 text-charcoal" />}
+          <span className="text-[11px]">{navStyle === 'liquid' ? 'Liquid' : 'Classic'}</span>
         </button>
       </div>
 
@@ -205,7 +186,7 @@ export const App: React.FC = () => {
               <LiquidNavbar
                 tone="light"
                 sound={true}
-                compact={isMobileView}
+                compact={true}
                 className="pointer-events-auto"
                 active={activeIndex >= 0 ? activeIndex : 0}
                 onChange={(i) => setActiveTab(tabOrder[i])}
@@ -239,7 +220,7 @@ export const App: React.FC = () => {
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobileView}
+                  compact={true}
                   active={1}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -273,7 +254,7 @@ export const App: React.FC = () => {
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobileView}
+                  compact={true}
                   active={2}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -307,7 +288,7 @@ export const App: React.FC = () => {
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobileView}
+                  compact={true}
                   active={3}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -462,7 +443,7 @@ export const App: React.FC = () => {
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobileView}
+                  compact={true}
                   active={4}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}

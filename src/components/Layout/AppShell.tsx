@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { Smartphone, Monitor } from 'lucide-react'
+import { Smartphone, Monitor, Droplets, LayoutGrid, FolderHeart } from 'lucide-react'
 
 interface AppShellProps {
   children: React.ReactNode
   isDeviceFrame?: boolean
   onToggleDeviceFrame?: (val: boolean) => void
+  navStyle?: 'classic' | 'liquid' | 'demo-waterline' | 'demo-folders'
+  onSelectNavStyle?: (style: 'classic' | 'liquid' | 'demo-waterline' | 'demo-folders') => void
 }
 
 export const AppShell: React.FC<AppShellProps> = ({
   children,
   isDeviceFrame: controlledDeviceFrame,
   onToggleDeviceFrame,
+  navStyle = 'liquid',
+  onSelectNavStyle,
 }) => {
   // Check if we are on a desktop screen
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
@@ -45,33 +49,84 @@ export const AppShell: React.FC<AppShellProps> = ({
 
   return (
     <div className="relative w-full h-[100dvh] min-h-[100dvh] bg-canvas overflow-hidden flex flex-col items-center justify-center">
-      {/* Floating Viewport Switcher Pill (Desktop only) */}
+      {/* Floating Top Control Bar (Desktop Studio Header) */}
       {isDesktop && (
-        <div className="hidden sm:flex absolute top-4 right-4 sm:right-20 z-[700] items-center gap-1 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
-          <button
-            onClick={() => setDeviceFrame(false)}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all ${
-              !isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Full-Screen</span>
-          </button>
-          <button
-            onClick={() => setDeviceFrame(true)}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all ${
-              isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Mobile Frame</span>
-          </button>
-        </div>
+        <header className="hidden sm:flex absolute top-4 inset-x-6 z-[700] items-center justify-between pointer-events-none">
+          {/* Left: Product Brand */}
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs font-semibold text-charcoal pointer-events-auto">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-azure opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-azure"></span>
+            </span>
+            <span>Travel Studio</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-azure/10 text-azure font-bold">iOS 18</span>
+          </div>
+
+          {/* Center: Component Showcase Selector (Cleanly outside the mobile canvas) */}
+          {onSelectNavStyle && (
+            <div className="flex items-center gap-1 p-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal pointer-events-auto">
+              <button
+                onClick={() => onSelectNavStyle('liquid')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all ${
+                  navStyle === 'liquid'
+                    ? 'bg-azure text-white shadow-xs'
+                    : 'text-charcoal-secondary hover:text-charcoal'
+                }`}
+                title="Nimbus UI Liquid Glass Waterline Navbar"
+              >
+                <Droplets className="w-3.5 h-3.5 shrink-0" />
+                <span>Liquid Navbar</span>
+              </button>
+              <button
+                onClick={() => onSelectNavStyle('classic')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all ${
+                  navStyle === 'classic'
+                    ? 'bg-charcoal text-white shadow-xs'
+                    : 'text-charcoal-secondary hover:text-charcoal'
+                }`}
+                title="Classic Apple-style bottom tab bar"
+              >
+                <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
+                <span>Classic Tab Bar</span>
+              </button>
+              <button
+                onClick={() => onSelectNavStyle('demo-folders')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium text-charcoal-secondary hover:text-charcoal transition-all"
+                title="Open Glass Folder Cards showcase"
+              >
+                <FolderHeart className="w-3.5 h-3.5 text-azure shrink-0" />
+                <span>Glass Folders</span>
+              </button>
+            </div>
+          )}
+
+          {/* Right: Viewport Mode Switcher */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal pointer-events-auto">
+            <button
+              onClick={() => setDeviceFrame(false)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-semibold transition-all ${
+                !isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
+              }`}
+            >
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Full-Screen</span>
+            </button>
+            <button
+              onClick={() => setDeviceFrame(true)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full font-semibold transition-all ${
+                isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Mobile Frame</span>
+            </button>
+          </div>
+        </header>
       )}
 
       {/* Main Viewport Container */}
       <div
-        className={`relative overflow-hidden bg-canvas transition-all duration-300 ${
+        className={`relative overflow-hidden bg-canvas transition-all duration-300 is-mobile-frame ${
           showDeviceFrame
             ? 'w-[393px] h-[852px] max-h-[92vh] max-w-[calc(100vw-32px)] rounded-[52px] border-[10px] border-[#18181B] shadow-[0_25px_80px_rgba(0,0,0,0.3)] ring-1 ring-black/10'
             : 'w-full h-full max-w-full'
