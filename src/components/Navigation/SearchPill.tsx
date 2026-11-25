@@ -62,7 +62,7 @@ export const SearchPill: React.FC<SearchPillProps> = ({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
                 isActive
                   ? 'bg-azure text-white shadow-[0_4px_14px_rgba(26,148,255,0.35)]'
-                  : 'bg-white/90 backdrop-blur-xl text-charcoal border border-white/60 hover:bg-white'
+                  : 'bg-white text-charcoal border border-black/8 hover:bg-[#F9F9FB]'
               }`}
             >
               <MapPin className={`w-3 h-3 ${isActive ? 'text-white' : 'text-azure'}`} />
@@ -79,10 +79,10 @@ export const SearchPill: React.FC<SearchPillProps> = ({
         })}
       </div>
 
-      {/* Apple Maps Style Search Bar */}
+      {/* Apple Maps Style Search Bar - Solid opaque white preventing map road label bleed */}
       <div
-        className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/92 backdrop-blur-2xl border shadow-[0_12px_36px_rgba(0,0,0,0.12)] transition-all duration-200 ${
-          isFocused ? 'border-azure ring-2 ring-azure/20' : 'border-white/70'
+        className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white border shadow-[0_8px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/5 transition-all duration-200 ${
+          isFocused ? 'border-azure ring-2 ring-azure/20' : 'border-black/8'
         }`}
       >
         <Search className="w-4 h-4 text-charcoal-muted shrink-0" />

@@ -10,7 +10,7 @@ import GlassFolder from '@/components/ui/glass-folder-cards'
 import GlassFolderCardsDemo from '@/components/ui/glass-folder-cards-demo'
 import { mockPins, mockTrips, currentUser } from './data/mockData'
 import { MemoryPin, Trip } from './types'
-import { PlusCircle, Compass, Layers, Droplets, LayoutGrid, FolderHeart, Sparkles } from 'lucide-react'
+import { PlusCircle, Compass, Layers, FolderHeart, Sparkles } from 'lucide-react'
 
 const travelLiquidTabs: LiquidNavItem[] = [
   { label: 'Map', icon: NimbusIcons.globe, fx: 'spin' },
@@ -136,18 +136,6 @@ export const App: React.FC = () => {
       navStyle={navStyle}
       onSelectNavStyle={setNavStyle}
     >
-      {/* Discreet Mobile Quick Mode Toggle (Only on native mobile where desktop header is hidden) */}
-      <div className="sm:hidden absolute top-14 left-3 z-[450] flex items-center pointer-events-auto">
-        <button
-          onClick={() => setNavStyle(navStyle === 'liquid' ? 'classic' : 'liquid')}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-subtle text-xs text-charcoal font-semibold active:scale-95 transition-all"
-          title="Toggle Navigation Style"
-        >
-          {navStyle === 'liquid' ? <Droplets className="w-3.5 h-3.5 text-azure" /> : <LayoutGrid className="w-3.5 h-3.5 text-charcoal" />}
-          <span className="text-[11px]">{navStyle === 'liquid' ? 'Liquid' : 'Classic'}</span>
-        </button>
-      </div>
-
       {activeTab === 'map' && (
         <div className="relative w-full h-full flex flex-col min-h-0 flex-1 overflow-hidden">
           <div className="flex-1 w-full h-full relative min-h-0">
