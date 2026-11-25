@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import { MemoryPin, Trip, User } from '../../types'
-import { Layers, Route as RouteIcon, ZoomIn, ZoomOut, Compass } from 'lucide-react'
+import { Layers, Route as RouteIcon, ZoomIn, ZoomOut } from 'lucide-react'
 
 interface LiveWorldMapProps {
   pins: MemoryPin[]
@@ -21,37 +21,37 @@ interface LiveWorldMapProps {
 // Clean, 100% Free Basemap Configurations (No API Key Required, No Watermark)
 // Signature Apple Maps aesthetic: crisp pastel colors, soft terrain, zero clutter
 const APPLE_MAP_STYLES = {
-  appleMinimal: {
+  appleStandard: {
+    name: 'Apple Maps (Explore)',
+    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
+    className: 'apple-maps-palette',
+  },
+  appleTopo: {
+    name: 'Apple Maps (Topography)',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, USGS, NOAA',
+    maxZoom: 19,
+    tileSize: 256,
+    zoomOffset: 0,
+    className: 'apple-maps-topo',
+  },
+  appleIvory: {
     name: 'Apple Maps (Clean Ivory)',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, HERE, Garmin',
     maxZoom: 16,
     tileSize: 256,
     zoomOffset: 0,
-    className: 'apple-minimal-tiles',
-  },
-  appleClean: {
-    name: 'Apple Maps (Explore OSM)',
-    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19,
-    tileSize: 256,
-    zoomOffset: 0,
-    className: 'apple-clean-tiles',
-  },
-  appleStreet: {
-    name: 'Apple Street Map',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, OpenStreetMap',
-    maxZoom: 19,
-    tileSize: 256,
-    zoomOffset: 0,
-    className: 'apple-clean-tiles',
+    className: 'apple-maps-ivory',
   },
   appleSatellite: {
     name: 'Apple Satellite Hybrid',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    attribution: '&copy; Esri, Maxar',
     maxZoom: 19,
     tileSize: 256,
     zoomOffset: 0,
@@ -74,9 +74,9 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null)
   const tileLayerRef = useRef<L.TileLayer | null>(null)
   const markersLayerRef = useRef<L.LayerGroup | null>(null)
-  const routeLayerRef = useRef<L.Polyline | null>(null)
+  const routeLayerRef = useRef<L.LayerGroup | null>(null)
 
-  const [activeStyleKey, setActiveStyleKey] = useState<keyof typeof APPLE_MAP_STYLES>('appleMinimal')
+  const [activeStyleKey, setActiveStyleKey] = useState<keyof typeof APPLE_MAP_STYLES>('appleStandard')
   const [showStyleMenu, setShowStyleMenu] = useState(false)
 
   // Initialize Map
@@ -177,14 +177,25 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
 
     markersLayer.clearLayers()
 
+    const categoryColors: Record<string, string> = {
+      nature: '#34C759',    // Apple Green
+      activity: '#007AFF',  // Apple Blue
+      food: '#FF9500',      // Apple Orange
+      sunset: '#FF2D55',    // Apple Pink
+      culture: '#AF52DE',   // Apple Purple
+    }
+
     pins.forEach((pin, index) => {
       const isSelected = selectedPin?.id === pin.id
+      const catColor = categoryColors[pin.category || ''] || '#007AFF'
 
       const markerHtml = `
         <div class="apple-pin-container ${isSelected ? 'is-selected' : ''}" style="animation-delay: ${index * 35}ms;">
+          ${isSelected ? '<div class="apple-pin-pulse"></div>' : ''}
           <div class="apple-pin-bubble">
             <img src="${pin.photos[0]}" alt="${pin.title}" loading="lazy" />
           </div>
+          <div class="apple-pin-category-dot" style="background-color: ${catColor};"></div>
           <div class="apple-pin-avatar">
             <img src="${pin.user.avatarUrl}" alt="${pin.user.name}" />
           </div>
@@ -195,8 +206,8 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       const customIcon = L.divIcon({
         className: 'apple-pin-wrapper',
         html: markerHtml,
-        iconSize: [42, 46],
-        iconAnchor: [21, 46],
+        iconSize: [44, 48],
+        iconAnchor: [22, 48],
       })
 
       const marker = L.marker(pin.coordinates, { icon: customIcon })
@@ -209,7 +220,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     })
   }, [pins, selectedPin, onSelectPin])
 
-  // Sync Route Polylines
+  // Sync Route Polylines (Apple Maps Turn-by-Turn Blue Navigation Style)
   useEffect(() => {
     const map = mapInstanceRef.current
     if (!map) return
@@ -220,16 +231,30 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     }
 
     if (showRoute && activeTrip && activeTrip.routeCoordinates.length > 1) {
-      const polyline = L.polyline(activeTrip.routeCoordinates, {
-        color: '#1A94FF',
-        weight: 3.5,
-        opacity: 0.9,
-        dashArray: '6, 8',
+      const routeGroup = L.layerGroup()
+
+      // Apple Navigation Ambient Glow Halo
+      const halo = L.polyline(activeTrip.routeCoordinates, {
+        color: '#007AFF',
+        weight: 9,
+        opacity: 0.3,
         lineCap: 'round',
         lineJoin: 'round',
-      }).addTo(map)
+      })
+      halo.addTo(routeGroup)
 
-      routeLayerRef.current = polyline
+      // Apple Navigation Core Stroke (Solid Apple System Blue)
+      const core = L.polyline(activeTrip.routeCoordinates, {
+        color: '#007AFF',
+        weight: 4.5,
+        opacity: 1,
+        lineCap: 'round',
+        lineJoin: 'round',
+      })
+      core.addTo(routeGroup)
+
+      routeGroup.addTo(map)
+      routeLayerRef.current = routeGroup
     }
   }, [activeTrip, showRoute])
 
@@ -247,7 +272,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full flex-1 min-h-0 overflow-hidden bg-[#EBF5FB]">
+    <div className="relative w-full h-full flex-1 min-h-0 overflow-hidden bg-[#A2D5F2]">
       {/* Map Canvas */}
       <div
         ref={mapContainerRef}
@@ -265,7 +290,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
             onClick={onToggleTripRoute}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-elevated border transition-all active:scale-95 ${
               showRoute
-                ? 'bg-azure text-white border-azure shadow-[0_4px_16px_rgba(26,148,255,0.35)]'
+                ? 'bg-azure text-white border-azure shadow-[0_4px_16px_rgba(0,122,255,0.35)]'
                 : 'bg-white/95 backdrop-blur-2xl text-charcoal border-black/5 hover:border-azure/30'
             }`}
           >
@@ -277,13 +302,19 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
 
       {/* Floating Apple Map Controls (Right Side - clean Apple circular controls) */}
       <div className="absolute top-28 sm:top-18 right-3.5 sm:right-4 z-[400] flex flex-col gap-2">
-        {/* Apple Compass Button */}
+        {/* Apple Compass Button (Iconic Apple Red & Silver Needle) */}
         <button
           onClick={handleRecenter}
           aria-label="Re-center on current location"
-          className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-2xl border border-black/5 shadow-elevated flex items-center justify-center text-charcoal hover:text-azure transition-all active:scale-92 group"
+          className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-2xl border border-black/5 shadow-elevated flex items-center justify-center transition-all active:scale-92 group"
+          title="Re-center North"
         >
-          <Compass className="w-4 h-4 text-[#18181B] transition-transform duration-300 group-hover:rotate-45" />
+          <svg viewBox="0 0 24 24" className="w-5 h-5 transition-transform duration-300 group-hover:rotate-45 drop-shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
+            {/* Apple North Needle (Vibrant Red) */}
+            <path d="M12 3.5 L15.5 12 L12 10.2 L8.5 12 Z" fill="#FF3B30" />
+            {/* Apple South Needle (Silver Slate) */}
+            <path d="M12 20.5 L15.5 12 L12 10.2 L8.5 12 Z" fill="#8E8E93" />
+          </svg>
         </button>
 
         {/* Zoom Controls */}

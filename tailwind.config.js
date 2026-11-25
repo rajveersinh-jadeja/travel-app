@@ -20,9 +20,24 @@ export default {
         'charcoal-secondary': '#71717A',
         'charcoal-muted': '#A1A1AA',
         azure: {
-          DEFAULT: '#1A94FF',
-          light: '#E8F4FF',
-          dark: '#0B76D8',
+          DEFAULT: '#007AFF', // Canonical Apple System Blue
+          light: '#E5F1FF',
+          dark: '#0062CC',
+        },
+        apple: {
+          blue: '#007AFF',
+          green: '#34C759',
+          indigo: '#5856D6',
+          orange: '#FF9500',
+          pink: '#FF2D55',
+          purple: '#AF52DE',
+          red: '#FF3B30',
+          teal: '#30B0C7',
+          yellow: '#FFCC00',
+          water: '#A2D5F2',
+          land: '#F7F5EE',
+          park: '#C5E5BC',
+          highway: '#FDB87D',
         },
         surface: {
           muted: '#F4F3F0',

@@ -51,7 +51,7 @@ export const SearchPill: React.FC<SearchPillProps> = ({
 
   return (
     <div className="w-full flex flex-col gap-2 pointer-events-auto">
-      {/* Quick Location Chips */}
+      {/* Quick Location Chips (Apple Maps Style) */}
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 px-0.5">
         {locationFilters.map((loc) => {
           const isActive = activeLocationId === loc.id
@@ -61,15 +61,15 @@ export const SearchPill: React.FC<SearchPillProps> = ({
               onClick={() => handleSelectFilter(loc)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${
                 isActive
-                  ? 'bg-azure text-white shadow-[0_4px_14px_rgba(26,148,255,0.35)]'
-                  : 'bg-white text-charcoal border border-black/8 hover:bg-[#F9F9FB]'
+                  ? 'bg-[#007AFF] text-white shadow-[0_4px_14px_rgba(0,122,255,0.35)]'
+                  : 'bg-white text-[#1C1C1E] border border-black/8 hover:bg-[#F2F2F7]'
               }`}
             >
-              <MapPin className={`w-3 h-3 ${isActive ? 'text-white' : 'text-azure'}`} />
+              <MapPin className={`w-3 h-3 ${isActive ? 'text-white' : 'text-[#007AFF]'}`} />
               <span>{loc.label}</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isActive ? 'bg-white/25 text-white' : 'bg-surface-muted text-charcoal-muted'
+                  isActive ? 'bg-white/25 text-white' : 'bg-[#F2F2F7] text-[#8E8E93]'
                 }`}
               >
                 {loc.count}
@@ -82,10 +82,10 @@ export const SearchPill: React.FC<SearchPillProps> = ({
       {/* Apple Maps Style Search Bar - Solid opaque white preventing map road label bleed */}
       <div
         className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white border shadow-[0_8px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/5 transition-all duration-200 ${
-          isFocused ? 'border-azure ring-2 ring-azure/20' : 'border-black/8'
+          isFocused ? 'border-[#007AFF] ring-2 ring-[#007AFF]/20' : 'border-black/8'
         }`}
       >
-        <Search className="w-4 h-4 text-charcoal-muted shrink-0" />
+        <Search className="w-4 h-4 text-[#8E8E93] shrink-0" />
         <input
           type="text"
           value={query}
@@ -93,26 +93,26 @@ export const SearchPill: React.FC<SearchPillProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Search friends, places, or albums..."
-          className="w-full bg-transparent text-sm text-charcoal placeholder:text-charcoal-muted/80 focus:outline-none font-medium"
+          className="w-full bg-transparent text-sm text-[#1C1C1E] placeholder:text-[#8E8E93] focus:outline-none font-medium"
         />
         {query ? (
           <button
             onClick={handleClear}
-            className="p-1 rounded-full hover:bg-surface-muted text-charcoal-muted active:scale-90 transition-transform"
+            className="p-1 rounded-full hover:bg-[#F2F2F7] text-[#8E8E93] active:scale-90 transition-transform"
           >
             <X className="w-4 h-4" />
           </button>
         ) : (
-          <div className="flex items-center gap-1 text-charcoal-muted">
+          <div className="flex items-center gap-1 text-[#8E8E93]">
             <button
               aria-label="Voice search"
-              className="p-1 hover:text-charcoal transition-colors active:scale-90"
+              className="p-1 hover:text-[#1C1C1E] transition-colors active:scale-90"
             >
               <Mic className="w-4 h-4" />
             </button>
             <button
               aria-label="Filter"
-              className="p-1 hover:text-charcoal transition-colors active:scale-90"
+              className="p-1 hover:text-[#1C1C1E] transition-colors active:scale-90"
             >
               <SlidersHorizontal className="w-4 h-4" />
             </button>
