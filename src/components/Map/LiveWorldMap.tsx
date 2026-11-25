@@ -14,12 +14,12 @@ interface LiveWorldMapProps {
   isActive?: boolean
 }
 
-// Clean, 100% Free Basemap Configuration
+// Clean, 100% Free Basemap Configuration (Zero Highway Shields, Zero Transit Clutter)
 // Signature Apple Maps aesthetic: crisp pastel colors, soft terrain, zero clutter
 const APPLE_MAP_CONFIG = {
-  url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
-  attribution: '&copy; OpenStreetMap',
-  maxZoom: 19,
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  attribution: '&copy; Esri',
+  maxZoom: 16,
   tileSize: 256,
   zoomOffset: 0,
   className: 'apple-maps-palette',

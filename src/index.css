@@ -63,9 +63,9 @@
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Signature Apple Maps Explore (OSM with Apple Color Matrix) */
+/* Signature Clutter-Free Apple Maps Palette (Zero Highway Shields, Zero Transit Clutter) */
 .apple-maps-palette {
-  filter: contrast(0.96) saturate(0.85) brightness(1.05) hue-rotate(-6deg);
+  filter: sepia(0.18) hue-rotate(-28deg) saturate(1.45) contrast(1.08) brightness(1.03);
 }
 
 /* Apple Maps Topography (Lush alpine greens & serene coastlines) */

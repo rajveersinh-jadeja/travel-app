@@ -49,31 +49,14 @@ export const SearchPill: React.FC<SearchPillProps> = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-2 pointer-events-auto">
-      {/* Clean Apple Location Filter Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 px-0.5">
-        {locationFilters.map((loc) => {
-          const isActive = activeLocationId === loc.id
-          return (
-            <button
-              key={loc.id}
-              onClick={() => handleSelectFilter(loc)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 active:scale-95 ${
-                isActive
-                  ? 'bg-[#007AFF] text-white shadow-sm'
-                  : 'bg-white text-[#1C1C1E] border border-black/8 hover:bg-[#F2F2F7]'
-              }`}
-            >
-              {loc.label}
-            </button>
-          )
-        })}
-      </div>
+    <div className="w-full flex flex-col p-3 rounded-[24px] bg-white/95 backdrop-blur-2xl border border-black/8 shadow-[0_12px_36px_rgba(0,0,0,0.12)] pointer-events-auto">
+      {/* Top drag handle indicator */}
+      <div className="w-9 h-1 rounded-full bg-black/15 mx-auto mb-2" />
 
-      {/* Minimal Apple Search Bar */}
+      {/* Minimal Apple Search Box */}
       <div
-        className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white border shadow-sm transition-all duration-200 ${
-          isFocused ? 'border-[#007AFF] ring-2 ring-[#007AFF]/20' : 'border-black/8'
+        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#F2F2F7] transition-all duration-200 mb-2.5 ${
+          isFocused ? 'ring-2 ring-[#007AFF]/30 bg-white border border-[#007AFF]' : ''
         }`}
       >
         <Search className="w-4 h-4 text-[#8E8E93] shrink-0" />
@@ -84,16 +67,36 @@ export const SearchPill: React.FC<SearchPillProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Search places..."
-          className="w-full bg-transparent text-sm text-[#1C1C1E] placeholder:text-[#8E8E93] focus:outline-none"
+          className="w-full bg-transparent text-sm text-[#1C1C1E] placeholder:text-[#8E8E93] focus:outline-none font-normal"
         />
         {query && (
           <button
             onClick={handleClear}
-            className="p-1 rounded-full hover:bg-[#F2F2F7] text-[#8E8E93] active:scale-90 transition-transform"
+            className="p-1 rounded-full hover:bg-black/5 text-[#8E8E93] active:scale-90 transition-transform"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         )}
+      </div>
+
+      {/* Clean Location Filter Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        {locationFilters.map((loc) => {
+          const isActive = activeLocationId === loc.id
+          return (
+            <button
+              key={loc.id}
+              onClick={() => handleSelectFilter(loc)}
+              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 active:scale-95 ${
+                isActive
+                  ? 'bg-[#1C1C1E] text-white shadow-xs'
+                  : 'bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA]'
+              }`}
+            >
+              {loc.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
