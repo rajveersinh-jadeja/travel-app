@@ -918,6 +918,8 @@ const GF_CSS = `
   display: inline-block;
   flex: none;
   vertical-align: top;
+  max-width: 100%;
+  touch-action: manipulation;
   font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;

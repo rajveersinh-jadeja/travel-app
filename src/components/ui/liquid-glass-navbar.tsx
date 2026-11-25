@@ -65,8 +65,9 @@ const PAD = 14 // canvas bleed around the pill, for shadows and ripples
 const NIMBUS_CSS = `
 .nimbus-nav{--n-tint:rgba(255,255,255,.14);--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.6);--n-rim:rgba(255,255,255,.7);
   position:relative;display:inline-flex;align-items:center;gap:2px;padding:6px;border-radius:999px;isolation:isolate;
-  max-width:calc(100vw - 20px);box-sizing:border-box;
-  font-family:ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
+  max-width:calc(100vw - 20px);box-sizing:border-box;touch-action:pan-x manipulation;
+  font-family:ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .nimbus-nav[data-tone="dark"]{--n-tint:rgba(10,18,40,.26);--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.66);--n-rim:rgba(255,255,255,.34)}
 .nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:var(--n-tint);
   -webkit-backdrop-filter:blur(10px) saturate(1.2) brightness(1.08);backdrop-filter:blur(10px) saturate(1.2) brightness(1.08);
@@ -79,7 +80,8 @@ const NIMBUS_CSS = `
   box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 6px rgba(0,162,255,.22),inset 0 0 0 1px rgba(255,255,255,.55),0 6px 16px -6px rgba(0,70,140,.45)}
 .nimbus-nav[data-gl="off"] .nimbus-drop{display:block}
 .nimbus-item{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border:0;border-radius:999px;background:none;color:var(--n-fg-soft);
-  font-family:inherit;font-weight:500;font-size:14px;line-height:1;letter-spacing:-.01em;text-decoration:none;cursor:pointer;transition:color .25s}
+  font-family:inherit;font-weight:500;font-size:14px;line-height:1;letter-spacing:-.01em;text-decoration:none;cursor:pointer;transition:color .25s;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;flex-shrink:0}
 .nimbus-item:hover,.nimbus-item[aria-current="page"]{color:var(--n-fg)}
 .nimbus-item:focus-visible{outline:2px solid #00A2FF;outline-offset:2px}
 .nv-ico{position:relative;display:inline-flex;flex:none}
@@ -108,9 +110,19 @@ const NIMBUS_CSS = `
 @keyframes nvDoor{0%{fill:transparent}30%{fill:#FFF3A8}100%{fill:rgba(126,232,255,.6)}}
 .nv-ico[data-fx="wave"] svg{animation:nvWave .9s ease-in-out both;transform-origin:50% 92%}
 @keyframes nvWave{0%{transform:none}20%{transform:rotate(-15deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(4deg)}100%{transform:translateY(-1px) scale(1.08)}}
-.nimbus-nav[data-compact="true"] .nimbus-item{padding:0 13px}
+.nimbus-nav[data-compact="true"]{padding:4px 6px;gap:2px}
+.nimbus-nav[data-compact="true"] .nimbus-item{padding:0 11px;height:38px;gap:0}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (max-width:640px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 12px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+@media (max-width:640px){
+  .nimbus-nav:not([data-compact="false"]){padding:4px 6px;gap:2px;max-width:calc(100vw - 16px)}
+  .nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 10px;height:38px;gap:0}
+  .nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@media (max-width:360px){
+  .nimbus-nav{padding:3px 4px;gap:1px;max-width:calc(100vw - 12px)}
+  .nimbus-nav .nimbus-item{padding:0 8px;height:36px}
+  .nimbus-nav .nv-ico svg{width:16px;height:16px}
+}
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
 `
 
@@ -513,7 +525,6 @@ export function LiquidNavbar({
   }
 
   const onMove = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return
     const p = local(e.clientX, e.clientY)
     const s = st.current
     s.mouse.x = p.x
@@ -533,8 +544,17 @@ export function LiquidNavbar({
       aria-label="Main"
       onKeyDown={onKeyDown}
       onPointerMove={onMove}
+      onPointerDown={(e) => {
+        const p = local(e.clientX, e.clientY)
+        const s = st.current
+        s.mouse.x = p.x
+        s.mouse.y = p.y
+        s.mouse.on = true
+        ripple(p.x, p.y, 0.8)
+      }}
+      onPointerUp={() => { st.current.mouse.on = false; loop() }}
+      onPointerCancel={() => { st.current.mouse.on = false; loop() }}
       onPointerLeave={() => { st.current.mouse.on = false; loop() }}
-      onPointerDown={(e) => { const p = local(e.clientX, e.clientY); ripple(p.x, p.y, 0.8) }}
       style={style}
     >
       <style dangerouslySetInnerHTML={{ __html: NIMBUS_CSS }} />

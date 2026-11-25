@@ -129,8 +129,8 @@ export const PinDetailSheet: React.FC<PinDetailSheetProps> = ({
           </button>
         </div>
 
-        {/* Scrollable Body on Mobile */}
-        <div className="overflow-y-auto overscroll-contain flex-1 no-scrollbar pb-6">
+        {/* Scrollable Body on Mobile with Safe Area */}
+        <div className="overflow-y-auto overscroll-contain flex-1 no-scrollbar pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]">
           {/* Photo Gallery with smooth transitions */}
           <div className="relative px-5 pt-2">
             <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-surface-muted shadow-subtle group">

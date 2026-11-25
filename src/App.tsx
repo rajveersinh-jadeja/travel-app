@@ -37,6 +37,8 @@ export const App: React.FC = () => {
   const [isMobile, setIsMobile] = useState<boolean>(() => {
     return typeof window !== 'undefined' ? window.innerWidth < 640 : false
   })
+  const [isDeviceFrame, setIsDeviceFrame] = useState<boolean>(false)
+  const isMobileView = isMobile || isDeviceFrame
 
   useEffect(() => {
     const handleResize = () => {
@@ -125,9 +127,10 @@ export const App: React.FC = () => {
   }
 
   const activeIndex = tabOrder.indexOf(activeTab)
+  const folderWidth = isMobileView ? Math.min(270, typeof window !== 'undefined' ? Math.max(250, window.innerWidth - 48) : 270) : 320
 
   return (
-    <AppShell>
+    <AppShell isDeviceFrame={isDeviceFrame} onToggleDeviceFrame={setIsDeviceFrame}>
       {/* Floating Navbar & Demo Switcher Pill (Top Left - safe from notch & dynamic island) */}
       <div className="absolute top-12 sm:top-4 left-3 sm:left-4 z-[700] flex items-center gap-1 p-1 rounded-full bg-white/92 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
         <button
@@ -198,11 +201,12 @@ export const App: React.FC = () => {
           {navStyle === 'classic' ? (
             <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
           ) : (
-            <div className="absolute bottom-3 sm:bottom-5 inset-x-0 z-[500] flex justify-center pointer-events-auto pb-[env(safe-area-inset-bottom,0px)]">
+            <div className="absolute bottom-3 sm:bottom-5 inset-x-0 z-[500] flex justify-center pointer-events-none pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] px-3">
               <LiquidNavbar
                 tone="light"
                 sound={true}
-                compact={isMobile}
+                compact={isMobileView}
+                className="pointer-events-auto"
                 active={activeIndex >= 0 ? activeIndex : 0}
                 onChange={(i) => setActiveTab(tabOrder[i])}
                 items={travelLiquidTabs}
@@ -231,11 +235,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
+              <div className="w-full flex justify-center py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobile}
+                  compact={isMobileView}
                   active={1}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -265,11 +269,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
+              <div className="w-full flex justify-center py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobile}
+                  compact={isMobileView}
                   active={2}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -299,11 +303,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
+              <div className="w-full flex justify-center py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobile}
+                  compact={isMobileView}
                   active={3}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}
@@ -382,7 +386,7 @@ export const App: React.FC = () => {
                 seed={4}
                 action="more"
                 labelPlacement="bottom-left"
-                width={isMobile ? 275 : 320}
+                width={folderWidth}
                 files={[
                   { name: "Canggu Sunset Surf", meta: "Echo Beach · 6:45 PM", art: "ember" },
                   { name: "Ubud Sacred Forest", meta: "Monkey Forest · 11:20 AM", art: "verdant" },
@@ -408,7 +412,7 @@ export const App: React.FC = () => {
                 seed={8}
                 action="add"
                 labelPlacement="top-left"
-                width={isMobile ? 275 : 320}
+                width={folderWidth}
                 files={[
                   { name: "Reine Rorbuer Cabins", meta: "Lofoten · 2:15 PM", art: "aurora" },
                   { name: "Hamnøy Bridge Vista", meta: "Sunrise · 6:10 AM", art: "glacier" },
@@ -429,7 +433,7 @@ export const App: React.FC = () => {
                 seed={12}
                 action="more"
                 labelPlacement="top-right"
-                width={isMobile ? 275 : 320}
+                width={folderWidth}
                 files={[
                   { name: "Shibuya Crossing", meta: "Midnight Rush · 11:45 PM", art: "dusk" },
                   { name: "Omoide Yokocho", meta: "Yakitori Alley · 8:30 PM", art: "ember" },
@@ -454,11 +458,11 @@ export const App: React.FC = () => {
             {navStyle === 'classic' ? (
               <BottomTabBar activeTab={activeTab} onSelectTab={setActiveTab} />
             ) : (
-              <div className="w-full flex justify-center py-2 pb-[env(safe-area-inset-bottom,0px)]">
+              <div className="w-full flex justify-center py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
                 <LiquidNavbar
                   tone="light"
                   sound={true}
-                  compact={isMobile}
+                  compact={isMobileView}
                   active={4}
                   onChange={(i) => setActiveTab(tabOrder[i])}
                   items={travelLiquidTabs}

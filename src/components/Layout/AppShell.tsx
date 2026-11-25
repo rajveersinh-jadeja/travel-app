@@ -3,21 +3,37 @@ import { Smartphone, Monitor } from 'lucide-react'
 
 interface AppShellProps {
   children: React.ReactNode
+  isDeviceFrame?: boolean
+  onToggleDeviceFrame?: (val: boolean) => void
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children }) => {
+export const AppShell: React.FC<AppShellProps> = ({
+  children,
+  isDeviceFrame: controlledDeviceFrame,
+  onToggleDeviceFrame,
+}) => {
   // Check if we are on a desktop screen
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
     return typeof window !== 'undefined' ? window.innerWidth >= 640 : true
   })
-  const [isDeviceFrame, setIsDeviceFrame] = useState(false)
+  const [internalDeviceFrame, setInternalDeviceFrame] = useState(false)
+
+  const isDeviceFrame = controlledDeviceFrame !== undefined ? controlledDeviceFrame : internalDeviceFrame
+
+  const setDeviceFrame = (val: boolean) => {
+    if (onToggleDeviceFrame) {
+      onToggleDeviceFrame(val)
+    } else {
+      setInternalDeviceFrame(val)
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 640
       setIsDesktop(desktop)
       if (!desktop) {
-        setIsDeviceFrame(false)
+        setDeviceFrame(false)
       }
     }
     window.addEventListener('resize', handleResize)
@@ -33,7 +49,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       {isDesktop && (
         <div className="hidden sm:flex absolute top-4 right-4 sm:right-20 z-[700] items-center gap-1 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-xl border border-surface-border shadow-elevated text-xs text-charcoal">
           <button
-            onClick={() => setIsDeviceFrame(false)}
+            onClick={() => setDeviceFrame(false)}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all ${
               !isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
             }`}
@@ -42,7 +58,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             <span>Full-Screen</span>
           </button>
           <button
-            onClick={() => setIsDeviceFrame(true)}
+            onClick={() => setDeviceFrame(true)}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold transition-all ${
               isDeviceFrame ? 'bg-charcoal text-white shadow-xs' : 'text-charcoal-secondary hover:text-charcoal'
             }`}
@@ -57,7 +73,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       <div
         className={`relative overflow-hidden bg-canvas transition-all duration-300 ${
           showDeviceFrame
-            ? 'w-[393px] h-[852px] max-h-[92vh] rounded-[52px] border-[10px] border-[#18181B] shadow-[0_25px_80px_rgba(0,0,0,0.3)] ring-1 ring-black/10'
+            ? 'w-[393px] h-[852px] max-h-[92vh] max-w-[calc(100vw-32px)] rounded-[52px] border-[10px] border-[#18181B] shadow-[0_25px_80px_rgba(0,0,0,0.3)] ring-1 ring-black/10'
             : 'w-full h-full max-w-full'
         }`}
       >
