@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import L from 'leaflet'
+import { Search, Layers, Navigation, ChevronRight } from 'lucide-react'
 import { MemoryPin, Trip } from '../../types'
+import { currentUser, mockFriends } from '../../data/mockData'
 
 interface LiveWorldMapProps {
   pins: MemoryPin[]
@@ -12,6 +14,9 @@ interface LiveWorldMapProps {
   centerCoordinates?: [number, number]
   zoomLevel?: number
   isActive?: boolean
+  onOpenProfile?: () => void
+  onOpenExploringFriends?: () => void
+  onToggleSearchSheet?: () => void
 }
 
 // Clean, 100% Free Basemap Configuration (Zero Highway Shields, Zero Transit Clutter)
@@ -31,9 +36,12 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   onSelectPin,
   activeTrip,
   showRoute,
-  centerCoordinates = [37.7749, -122.4194],
-  zoomLevel = 12,
+  centerCoordinates = [48.8584, 2.2945],
+  zoomLevel = 4,
   isActive = true,
+  onOpenProfile,
+  onOpenExploringFriends,
+  onToggleSearchSheet,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<L.Map | null>(null)
@@ -49,7 +57,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       center: centerCoordinates,
       zoom: zoomLevel,
       zoomControl: false,
-      attributionControl: true,
+      attributionControl: false,
       fadeAnimation: true,
       zoomAnimation: true,
       markerZoomAnimation: true,
@@ -106,7 +114,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     }
   }, [isActive])
 
-  // Update Markers dynamically per user - Clean, uncluttered Apple lens pins
+  // Update Markers dynamically per user - Clean Teardrop Lens Pins matching Screen 6
   useEffect(() => {
     const map = mapInstanceRef.current
     const markersLayer = markersLayerRef.current
@@ -120,7 +128,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
       const markerHtml = `
         <div class="apple-pin-container ${isSelected ? 'is-selected' : ''}" style="animation-delay: ${index * 35}ms;">
           <div class="apple-pin-bubble">
-            <img src="${pin.photos[0]}" alt="${pin.title}" loading="lazy" />
+            <img src="${pin.user.avatarUrl}" alt="${pin.user.name}" loading="lazy" />
           </div>
           <div class="apple-pin-stem"></div>
         </div>
@@ -141,6 +149,21 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
 
       marker.addTo(markersLayer)
     })
+
+    // Central pulsing live explorer dot
+    const pulseHtml = `
+      <div class="relative flex items-center justify-center">
+        <div class="absolute w-8 h-8 rounded-full bg-[#0066FF] opacity-40 animate-ping"></div>
+        <div class="w-4 h-4 rounded-full bg-[#0066FF] border-2 border-white shadow-md"></div>
+      </div>
+    `
+    const pulseIcon = L.divIcon({
+      className: 'pulse-dot-wrapper',
+      html: pulseHtml,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    })
+    L.marker([50.8503, 4.3517], { icon: pulseIcon }).addTo(markersLayer)
   }, [pins, selectedPin, onSelectPin])
 
   // Sync Route Polylines (Apple Maps Turn-by-Turn Blue Navigation Style)
@@ -156,21 +179,23 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
     if (showRoute && activeTrip && activeTrip.routeCoordinates.length > 1) {
       const routeGroup = L.layerGroup()
 
-      // Apple Navigation Ambient Glow Halo
+      // Ambient Glow
       const halo = L.polyline(activeTrip.routeCoordinates, {
-        color: '#007AFF',
-        weight: 8,
+        color: '#0066FF',
+        weight: 6,
         opacity: 0.3,
+        dashArray: '6, 8',
         lineCap: 'round',
         lineJoin: 'round',
       })
       halo.addTo(routeGroup)
 
-      // Apple Navigation Core Stroke (Solid Apple System Blue)
+      // Core Path
       const core = L.polyline(activeTrip.routeCoordinates, {
-        color: '#007AFF',
-        weight: 4,
-        opacity: 1,
+        color: '#0066FF',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: '6, 8',
         lineCap: 'round',
         lineJoin: 'round',
       })
@@ -189,7 +214,7 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
   }, [centerCoordinates, zoomLevel])
 
   const handleRecenter = () => {
-    mapInstanceRef.current?.flyTo([37.7749, -122.4194], 12, { duration: 0.9 })
+    mapInstanceRef.current?.flyTo([48.8584, 2.2945], 4, { duration: 0.9 })
   }
 
   return (
@@ -201,25 +226,76 @@ export const LiveWorldMap: React.FC<LiveWorldMapProps> = ({
         style={{ width: '100%', height: '100%', minHeight: '100%' }}
       />
 
-      {/* Top iOS Safe Area Glass Vignette (Ensures status bar time & battery are crystal clear) */}
+      {/* Top iOS Safe Area Glass Vignette */}
       <div className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-white/90 via-white/40 to-transparent pointer-events-none z-[300]" />
 
-      {/* Apple Compass Button (Iconic Apple Red & Silver Needle) - Top Right */}
-      <div className="absolute top-16 sm:top-5 right-3.5 sm:right-4 z-[400]">
+      {/* Top Left: User Avatar (Screen 6) */}
+      <div className="absolute top-12 left-4 z-[400] flex items-center pointer-events-auto">
+        <button
+          onClick={onOpenProfile}
+          className="w-10 h-10 rounded-full border-2 border-white shadow-elevated overflow-hidden active:scale-95 transition-transform"
+        >
+          <img
+            src={currentUser.avatarUrl}
+            alt={currentUser.name}
+            className="w-full h-full object-cover"
+          />
+        </button>
+      </div>
+
+      {/* Top Right: Search and Layers circular pill buttons (Screen 6) */}
+      <div className="absolute top-12 right-4 z-[400] flex items-center gap-2 pointer-events-auto">
+        <button
+          onClick={onToggleSearchSheet}
+          aria-label="Search"
+          className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-xl border border-black/8 shadow-elevated flex items-center justify-center text-[#1C1C1E] active:scale-95 transition-all"
+        >
+          <Search className="w-4 h-4" />
+        </button>
+        <button
+          aria-label="Layers"
+          className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-xl border border-black/8 shadow-elevated flex items-center justify-center text-[#1C1C1E] active:scale-95 transition-all"
+        >
+          <Layers className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Floating Recenter GPS Navigation Arrow at bottom-right (Screen 6) */}
+      <div className="absolute bottom-36 right-4 z-[400] pointer-events-auto">
         <button
           onClick={handleRecenter}
-          aria-label="Re-center North"
-          className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-2xl border border-black/8 shadow-elevated flex items-center justify-center transition-all active:scale-92 group"
-          title="Re-center North"
+          aria-label="Locate me"
+          className="w-11 h-11 rounded-full bg-white shadow-elevated border border-black/8 flex items-center justify-center active:scale-95 transition-all group"
         >
-          <svg viewBox="0 0 24 24" className="w-5 h-5 transition-transform duration-300 group-hover:rotate-45 drop-shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
-            {/* Apple North Needle (Vibrant Red) */}
-            <path d="M12 3.5 L15.5 12 L12 10.2 L8.5 12 Z" fill="#FF3B30" />
-            {/* Apple South Needle (Silver Slate) */}
-            <path d="M12 20.5 L15.5 12 L12 10.2 L8.5 12 Z" fill="#8E8E93" />
-          </svg>
+          <Navigation className="w-5 h-5 fill-[#0066FF] text-[#0066FF] transform rotate-45" />
+        </button>
+      </div>
+
+      {/* Bottom Floating Friends Strip (Screen 6) */}
+      <div className="absolute bottom-20 inset-x-4 z-[400] pointer-events-auto">
+        <button
+          onClick={onOpenExploringFriends}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/95 backdrop-blur-2xl border border-black/8 shadow-elevated active:scale-98 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-2.5">
+              {mockFriends.slice(0, 3).map((f) => (
+                <img
+                  key={f.id}
+                  src={f.avatarUrl}
+                  alt={f.name}
+                  className="w-7 h-7 rounded-full object-cover border-2 border-white shadow-xs"
+                />
+              ))}
+            </div>
+            <span className="text-xs font-semibold text-[#1C1C1E]">
+              Exploring · 12 friends here
+            </span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[#8E8E93]" />
         </button>
       </div>
     </div>
   )
 }
+
